@@ -1,0 +1,138 @@
+\documentclass[12pt,a4paper]{article} % Añadí a4paper para estándar
+\usepackage[utf8]{inputenc}
+\usepackage[spanish, es-tabla]{babel} % es-tabla evita que diga "Cuadro" en vez de "Tabla"
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{graphicx}
+\usepackage{amsmath} % Para matemáticas avanzadas
+\usepackage{amsfonts} % Para fuentes matemáticas
+
+\title{Informe: PC como Workstation Científica}
+\author{Simón Tovar V-31.678.578\\ Gabriel Becerra V-31.654.243}
+\date{Enero 2026}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+\newpage
+
+\section{Objetivo}
+Se diseño una PC para su uso como Workstation Cientifica/STEM (Science (Ciencia), Technology (Tecnología), Engineering (Ingeniería) e Mathematics (Matemáticas)),
+por lo que se busco la eficiencia para álgebra lineal avanzada, simulaciones físicas o datos en MATLAB/Python.
+
+\section{Componentes}
+\paragraph{Presupuesto} 3000\$
+
+\begin{table}[h]
+    \centering
+    \makebox[\textwidth][c]{
+    \begin{tabular}{|l|c|r|}
+    \hline 
+     & Componente & Precio \\ \hline
+    Motherboard & ASRock X80 Taichi Creator ATX AM5 & 319,99\$ \\ \hline
+    CPU & AMD Ryzen 9 9950X 4.3 GHz 16-Core & 549,00\$ \\ \hline
+    CPU Cooler & Noctua NH-D15 82.52 CFM CPU Cooler & 139,94\$ \\ \hline
+    RAM & $2 \times \text{Kingston Server Premier 32GB DDR5-5600 CL46}$ & 762,48\$ \\ \hline
+    Almacenamiento & Kingston KC3000 2.048 TB M.2-2280 PCIe 4.0 X4 NVME SSD & 229,99\$ \\ \hline
+    GPU & Gigabyte WINDFORCE OC SFF GeForce RTX 5070 Ti 16 GB & 799,99\$ \\ \hline
+    Alimentación & Corsair RM850e (2025) 850 W Fully Modular ATX & 109,99\$ \\ \hline
+    Case & Cooler Master Elite 502 ATX Mid Tower Case & 88,99\$ \\ \hline
+    \end{tabular}
+    }
+\end{table}
+
+\paragraph{Total:} 3000,37\$
+
+\subsection{Captura de pantalla del precio de los componentes.}
+
+\begin{figure}[h] % [h] intenta poner la imagen "Aquí" (Here)
+    \centering    % Centra la imagen horizontalmente
+    \includegraphics[width=1\textwidth]{PreciosComponentes.jpeg} % Ajusta el tamaño al 70% del ancho del texto
+    \caption{Precios de los componentes 07/01/2026} % El título de la imagen
+    \label{fig:precios} % Una etiqueta interna para referenciarla después
+\end{figure}
+
+\section{Justificación}
+
+\subsection{CPU:}
+AMD Ryzen 9 9950X 16 núcleos y 32 hilos, se eligió por el líder actual en 
+rendimiento multihilo para plataformas de escritorio. Su arquitectura Zen 5 
+soporta instrucciones AVX-512 completas, esto significa que puede realizar
+hasta 16 operaciones matemáticas en un solo ciclo, esto hace que en 
+simulaciones de fluidos, álgebra lineal o criptografia, el rendimiento no 
+solo mejore un poco, sino que en algunos casos puede hasta duplicarse.
+
+Ademas se eligió por sobre las opciones actuales de intel debido a que estas
+ultimas utilizan una arquitectura híbrida de núcleos de ``eficiencia'' y
+núcleos de ``Alto rendimiento'', por lo que no son compatibles con instrucciones AVX-512.
+
+\subsection{Memoria RAM:}
+64 GB Kigston Server Premier (ECC UDIMM), se descartaron memorias ``Gamer'' en favor de
+módulos con ECC (Error Correction Code) real. En simulaciones matemáticas largas, un solo
+``bit flip'' (error de memoria por radiación cósmica o interferencia) puede corromper
+semanas de calculo. Esta memoria detecta y corrige esos errores en tiempo real, garantizando
+que los resultados de los algoritmos sean matemáticamente precisos.
+
+Esto se logra gracias al mecanismo SECDED (Single Error Correction, Double Error Detection),
+cuando el procesador escribe datos en la RAM, un algoritmo matemático (basado en el Código 
+Hamming) calcula un valor de control para esos datos y los guarda en los bits extra, cada vez
+que se lee ese dato, la memoria vuelve a calcular el código y lo compara con el original, y 
+si el código no coincide porque un bit cambio, el algoritmo tiene suficiente información 
+matemática para saber exactamente que bit fallo y lo voltea de regreso a su estado correcto 
+en mili-segundos. En caso de que fallen dos bits al mismo tiempo (algo estadísticamente muy
+raro), la memoria no puede corregirlos, pero detecta el error y ordena al sistema apagarse
+de forma inmediata.
+
+\subsection{Motherboard:}
+ASRock X870 Taichi Creator, es una placa base de grado ``Creator/Workstation''.
+
+\paragraph{Conectividad:} Incluye puertos Ethernet de 10 Gb y 5Gb, permitiendo la 
+transferencia de grandes datasets a servidores NAS o clústeres de computo sin cuellos de
+botella de red.
+
+\paragraph{Estabilidad:} Sus fases de poder (VRM) están sobredimensionadas para mantener al 
+Ryzen 9 operando al 100\% de carga durante días sin sobrecalentarse.
+
+\subsection{Almacenamiento:}
+Kigston KC3000 2TB (NVMe Gen 4), se priorizo la durabilidad y la consistencia. Utiliza 
+memoria TLC con DRAM Cache dedicada. Esto es crucial para la compilación de software y el
+uso de memoria virtual (Swap), donde debe manejar miles de pequeños archivos simultáneamente
+sin perder velocidad, algo que los discos económicos (QLC/DRAM-less) no pueden hacer.
+
+\subsection{GPU:}
+NVIDIA GeForce RTX 5070 Ti 16 GB, se selecciono NVIDIA por su plataforma CUDA (Compute
+Unified Device Architecture) que le permite al procesador delegar tareas matemáticas pesadas
+a la tarjeta gráfica, y por sus librerías que son dominantes en la ciencia de datos, machine
+learning y simulación física. Los 16 GB de VRAM permiten cargar modelos tamaño considerable
+en la memoria de la tarjeta para procesamiento paralelo masivo.
+
+\subsection{Refrigeración}
+Noctua NH-D15. Fiabilidad mecánica absoluta. En un entorno de trabajo crítico, se evitó la 
+refrigeración líquida (que tiene riesgo de fallo de bomba o fugas a largo plazo). El 
+disipador por aire de Noctua ofrece un rendimiento térmico similar con cero riesgo de fallos
+catastróficos, ideal para una máquina que debe durar años con mantenimiento mínimo. Ademas incluye
+pasta térmica pre-aplicada.
+
+\subsection{Gabinete:}
+Cooler Master Elite 502. Provee el espacio físico necesario (soporta coolers de hasta 170mm 
+y GPUs de 410mm) con una estética profesional y sobria, adecuada para un laboratorio o 
+entorno de oficina, alejándose de la estética ``Gamer'' agresiva.
+
+\subsection{Alimentación:}
+Corsair RM850e (ATX 3.0). Eficiencia energética y seguridad. Certificación ATX 3.0 para 
+manejar los picos de energía transitorios de las nuevas tarjetas gráficas de la serie 50 de 
+forma nativa, protegiendo la inversión de hardware ante fluctuaciones eléctricas.
+
+\section{Conclusiones:}
+La configuración presentada para una workstation científica, se ajusta y busca dar el mejor
+rendimiento posible en sus funciones con el presupuesto limitado de 3000\$, gracias a su
+memoria, su procesador y su refrigeración se logra un equipo de bajo mantenimiento y que
+prioriza la estabilidad, la integridad y la operación continua, con la capacidad suficiente 
+para ejecutar desde simulaciones físicas y álgebra lineal avanzada hasta entrenamiento
+de redes neuronales profundas.
+
+Con un mayor presupuesto se podrían expandir la cantidad de memoria RAM, e instalar
+almacenamiento NVMe Gen 5 ya que la motherboard soporta esa tecnología.
+
+\end{document}
