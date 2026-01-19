@@ -1,0 +1,80 @@
+\documentclass[12pt]{article}
+\usepackage[utf8]{inputenc}   % Soporte para tildes y ñ
+\usepackage[spanish]{babel}    % Configura el idioma a español
+\usepackage[margin=2.5cm]{geometry} % Configura los márgenes
+\usepackage{graphicx}          % Para insertar imágenes
+\usepackage{amsmath}
+\usepackage{parskip} % Separa párrafos con espacio y elimina la sangría
+
+\title{Hoja de referencias arquitectura del computador}
+\author{Simón Tovar CI: 31.678.578}
+\date{2026}
+
+\begin{document}
+
+\maketitle
+
+\tableofcontents
+\newpage
+
+\section{CAPITULO 1}
+\subsection{Prestaciones}
+$${\text{Prestaciones}}_x=\frac{1}{\text{Tiempo de ejecución}_x}$$
+Sean $x$ e $y$ dos equipos distintos decimos que:
+$$\text{Prestaciones}_x>\text{Prestaciones}_y$$
+cuando: $\text{Tiempo de ejecución}_y>\text{Tiempo de ejecución}_x$ también tenemos que:
+$$\frac{\text{Prestaciones}_x}{\text{Prestaciones}_y}=n$$
+donde $n$ es el numero de veces que $x$ es mas rápida que $y$.
+
+\subsubsection{Tiempo de Ejecución}
+El tiempo de ejecución se define de la siguiente manera:
+$$\text{Tiempo de ejecución}=\text{Ciclos de reloj de CPU} \times \text{Tiempo de ciclo de reloj}$$
+Donde $\text{Tiempo de ciclo de reloj}= \frac{1}{\text{Frecuencia de reloj}}$ por lo que también se puede escribir de la siguiente forma:
+$$\text{Tiempo de ejecución}=\frac{\text{Ciclos de reloj de CPU}}{\text{Frecuencia de reloj}}$$
+
+\subsubsection{Ciclos de reloj de CPU}
+Los Ciclos de reloj de CPU se definen de la siguiente forma:
+$$\text{Ciclos de reloj de CPU}=\text{Instrucciones de un programa} \times \text{CPI}$$
+Donde CPI es la media de ciclos por instrucción.
+
+De esta manera ahora la formula de tiempo de ejecución la podemos escribir de la siguiente manera:
+$$\text{Tiempo de Ejecución}=\frac{\text{N}^{\circ}\text{. de instrucciones}\times\text{CPI}}{\text{Frecuencia de reloj}}$$
+
+\subsection{Fabricación}
+
+\subsubsection{Costes}
+
+$$\text{Coste por dado}=\frac{\text{coste por oblea}}{\text{dado por oblea}\times\text{factor de producción}}$$
+
+$$\text{Dados por oblea}=\frac{\text{área de la oblea}}{\text{área del dado}}$$
+
+$$\text{Factor de producción}=\frac{1}{(1+(\text{defectos por área}\times\text{área del dado}/2))^2}$$
+
+\subsection{SPEC}
+
+$$\text{Razón de SPEC}=\frac{\text{tiempo de ejecución en equipo de referencia}}{\text{tiempo de ejecución en equipo evaluado}}$$
+
+$$\text{Media geométrica}=\sqrt[n]{\prod_{i=1}^n \text{Razón de SPEC}_i}$$
+
+\subsection{Ecuaciones varias}
+
+\subsubsection{Ley de Amdhal}
+regla que
+establece que el aumento posible de las prestaciones con una mejora 
+determinada está limitado por la cantidad en que se usa la mejora. Esta es 
+una versión cuantitativa de la ley de rendimiento decreciente en economía.
+
+$$\text{Tiempo nuevo}=\text{tiempo no afectado}+\frac{\text{tiempo afectado}}{\text{cantidad de mejora}}$$
+
+\subsubsection{MIPS}
+medida de la velocidad de ejecución de un programa basada en el número de 
+instrucciones. MIPS está definido como el número de instrucciones dividido 
+por el producto del tiempo de ejecución por $10^6$.
+
+$$\text{MIPS}=\frac{\text{numero de instrucciones}}{\text{tiempo de ejecución}\times10^6}$$
+
+\paragraph{Ecuación clave}
+
+$$\frac{\text{segundos}}{\text{programa}}=\frac{\text{instrucciones}}{\text{programa}} \times \frac{\text{ciclos de reloj}}{\text{instrucción}} \times \frac{\text{segundos}}{\text{ciclos de reloj}}$$
+
+\end{document}
