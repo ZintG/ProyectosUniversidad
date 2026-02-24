@@ -199,7 +199,7 @@ Esto demuestra que la decisión entre el enfoque iterativo y recursivo no es sol
 \subsubsection{¿Qué diferencias existen entre registros temporales (\$t0–\$t9) y registros guardados (\$s0–
 \$s7) y cómo se aplicó esta distinción en la práctica?}
 
-Los registros \$t0-\$t9 son registros temporales, por convención si una función o procedimiento quiere usarlos no tiene la obligación de resguardar los datos anteriores que estén en estos registros previo a la ejecución de la misma. Mientras que los registros \$s0-\$s7 son registros guardados, es decir no volátiles, por lo que si una función o procedimiento quiere usarlos tiene la obligación de guardar su valor original en la pila y restaurarlo al finalizar su ejecución.
+Los registros \$t0-\$t9 son registros temporales, por convención si una función o procedimiento quiere usarlos no tiene la obligación de resguardar los datos anteriores que estén en estos registros, previo a la ejecución de la misma. Mientras que los registros \$s0-\$s7 son registros guardados, es decir no volátiles, por lo que si una función o procedimiento quiere usarlos tiene la obligación de guardar su valor original en la pila y restaurarlo al finalizar su ejecución.
 
 En el quicksort implementado, esto se puede ver en la gestion manual de la pila. Debido a que se utilizaron registros de argumento y temporales para controlar los limites de la partición, y dado que estos no se preservan en llamadas recursivas, se guardaron los registros \$ra, \$a0, \$a1 y \$a2 en la pila.
 
@@ -278,6 +278,12 @@ Conectando con la respuesta anterior considero que el modo paso a paso es la may
 \subsubsection{¿Cómo puede visualizarse en MARS el camino de datos para una instrucción tipo R? (por ejemplo: add)}
 
 Puede hacerse con la herramienta MIPS X-Ray, esta muestra un diagrama del camino de datos en tiempo real de la ejecucion del programa y las instrucciones, a través de esta animación, se comprobó visualmente que los operandos viajan desde el banco de registros hacia la ALU, y que el resultado retorna directamente a su registro de destino, puenteando por completo el bloque funcional de la memoria RAM.
+
+\subsubsection{Análisis y discusión de los resultados}
+
+Aunque el QuickSort es algoritmicamente superior $O(n\log{n})$, su implementación en MIPS32 es mas compleja debido a la gestión de la pila. Mientras que el Bubble sort a pesar de su complejidad $O(n^2)$, tiene un código mas lineal y fácil de seguir gracias a su naturaleza iterativa.
+
+Utilizando la herramienta de ejecución paso a paso se observo como el Quicksort consume memoria dinámica de forma recursiva, reservando 20 bytes por cada llamada en la pila, mientras que el bubble sort se mantiene con memoria lineal operando el arreglo y los registros temporales.
 
 \section{Anexos:}
 
