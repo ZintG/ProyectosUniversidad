@@ -1,0 +1,302 @@
+\documentclass[12pt,a4paper]{article}
+
+% --- Extensiones y Paquetes Necesarios ---
+\usepackage[utf8]{inputenc}
+\usepackage[spanish, es-tabla]{babel}
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{graphicx} % Para capturas de pantalla de MARS
+\usepackage{listings} % Para los archivos .asm (MIPS)
+\usepackage{xcolor}
+\usepackage{titlesec}
+\usepackage{amsmath}  % Para las fórmulas de paridad
+\usepackage{float}
+
+% --- Configuración de Listado para MIPS32 ---
+% --- Definición de Lenguaje MIPS ---
+\lstdefinelanguage{mips}{
+    morekeywords={add, addu, addi, addiu, sub, subu, mul, div, and, or, xor, nor, slt, slti, lw, sw, lb, sb, la, li, move, jal, jr, j, beq, bne, syscall},
+    sensitive=false,
+    morecomment=[l]{\#},
+    morestring=[b]",
+}
+
+% --- Configuración de Listado ---
+\lstset{
+    language=mips,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue}\bfseries,
+    commentstyle=\color{gray}\itshape,
+    stringstyle=\color{red},
+    numbers=left,
+    numberstyle=\tiny,
+    stepnumber=1,
+    breaklines=true,
+    frame=single,
+    showstringspaces=false
+}
+
+\begin{document}
+
+% --- Encabezado ---
+\begin{center}
+    \textbf{\Large Universidad de Carabobo}\\
+    \textbf{Facultad de Ciencias y Tecnología}\\
+    \textbf{Departamento de Computación}\\
+    \textbf{Arquitectura del Computador 2025-II}
+\end{center}
+
+\vspace{0.5cm}
+
+\begin{flushright}
+    \textbf{Integrantes:}\\
+    Simón Tovar V31.678.578\\Gabriel Becerra V31.654.243\\
+    Marzo 2026
+\end{flushright}
+
+\section*{Informe: Práctica de Laboratorio 3}
+
+\tableofcontents
+\newpage 
+
+\section{Teoría y Conceptos}
+
+\subsubsection{1. Explique cómo se organiza la memoria cuando un sistema utiliza memory-mapped I/O. ¿En qué región de memoria se suelen mapear los dispositivos? ¿Qué implicaciones tiene para las instrucciones lw y sw?}
+
+Cuando un sistema utiliza Memory-Mapped I/O, el espacio de direccionamiento del procesador (los 4 GB de direcciones posibles en un sistema de 32 bits) no se dedica exclusivamente a la memoria RAM. En su lugar, el mapa de memoria se "reparte": algunas direcciones apuntan a celdas de memoria física, y otras direcciones se asignan a registros internos de los periféricos. Para el procesador, no existe una distinción física entre una dirección de RAM y una dirección de un sensor.
+
+Existe un componente de hardware (el decodificador) que "mira" el bus de direcciones. Si la dirección solicitada pertenece al rango de un sensor, activa ese dispositivo en lugar de la memoria principal. En la arquitectura MIPS32 y en simuladores como MARS, los dispositivos de hardware se suelen mapear en la parte más alta de la memoria, usualmente a partir de la dirección 0xFFFF0000. En los ejercicios de esta práctica, para facilitar la simulación, los registros de los sensores (LuzControl, PresionControl, TensionControl, etc.) se definen directamente en la memoria de datos.
+
+\textbf{Implicaciones para las instrucciones:}
+\begin{itemize}
+    \item \textbf{Instrucción sw:} No se usa solo para guardar variables, sino para enviar comandos al hardware. Por ejemplo, hacer un sw al registro LuzControl es físicamente equivalente a enviar una señal eléctrica que enciende el sensor.
+    \item \textbf{Instrucción lw:} Se utiliza para consultar el estado o recibir datos del mundo físico. Cuando haces un lw desde LuzEstado, estás preguntando electrónicamente al sensor si ya terminó su tarea.
+\end{itemize}
+
+\subsubsection{2. ¿Cuál es la principal diferencia entre memory-mapped I/O y la entrada/salida por puertos? ¿Qué ventajas y desventajas tiene cada enfoque? ¿Por qué MIPS32 utiliza principalmente memory-mapped I/O?}
+
+A diferencia de Memory-Mapped I/O, en la entrada/salida por puertos existe un mapa de direcciones exclusivo para los dispositivos, independiente de la RAM. Por ejemplo, puedes tener la dirección 0x001 en RAM y una dirección 0x001 diferente en el espacio de puertos. Requiere instrucciones especiales del conjunto de instrucciones (ISA), como IN y OUT (comunes en la arquitectura x86). El procesador tiene un pin físico adicional (M/IO) para indicar si la dirección en el bus es para la memoria o para un puerto de E/S.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|p{0.45\textwidth}|p{0.45\textwidth}|}
+\hline
+\textbf{Memory-Mapped I/O} & \textbf{Entrada/Salida por Puertos} \\ \hline
+\textbf{Ventajas:} No requiere instrucciones nuevas. Permite usar todos los modos de direccionamiento y registros para manipular el hardware. & \textbf{Ventajas:} Al usar instrucciones especiales, es más fácil evitar que un programa de usuario acceda al hardware sin permiso. No "desperdicia" direcciones de la RAM. \\ \hline
+\textbf{Desventajas:} El hardware "roba" espacio que podría usarse para la memoria RAM. & \textbf{Desventajas:} Requiere añadir lógica y comandos extras al procesador. Es más difícil para los compiladores de C optimizar el acceso. \\ \hline
+\end{tabular}
+\end{table}
+
+La razón por la que MIPS32 utiliza Memory-Mapped I/O es por su filosofía RISC (Reduced Instruction Set Computer). MIPS busca tener la menor cantidad de instrucciones posibles para que el hardware sea rápido y eficiente. Al usar MMIO, MIPS evita tener que implementar instrucciones como IN o OUT. Al tratar al hardware como memoria, puedes usar cualquier instrucción de manipulación de datos sobre un sensor. Esto facilita mucho la creación de compiladores y sistemas operativos.
+
+\subsubsection{3. En un sistema con memory-mapped I/O: ¿Qué problemas pueden surgir si dos dispositivos usan direcciones solapadas? ¿Cómo se evita este conflicto?}
+
+En un sistema que utiliza E/S mapeada en memoria (MMIO), cada dispositivo debe tener un rango de direcciones único para comunicarse con el procesador. Si dos dispositivos usan direcciones solapadas, surgen los siguientes problemas:
+\begin{itemize}
+    \item \textbf{Colisión en el Bus de Datos:} Durante una operación de lectura (lw), ambos dispositivos intentarían colocar sus datos en el bus al mismo tiempo, lo que resulta en datos corruptos ("basura") o incluso daños eléctricos por cortocircuitos en las líneas del bus.
+    \item \textbf{Escrituras Duplicadas:} Al realizar una operación de escritura (sw), el procesador enviaría el mismo comando a ambos periféricos simultáneamente, provocando comportamientos impredecibles o activaciones accidentales en el hardware.
+    \item \textbf{Inestabilidad del Sistema:} El procesador no tendría forma de distinguir qué dispositivo está respondiendo, lo que causaría errores fatales en el software de control y controladores (drivers).
+\end{itemize}
+
+Para prevenir estos problemas, el sistema implementa los siguientes mecanismos:
+\begin{itemize}
+    \item \textbf{Decodificación de Direcciones:} Se utiliza lógica de hardware (decodificadores) que analiza los bits del bus de direcciones y genera una señal de "Habilitación" o "Chip Select" (CS) única para cada dispositivo, asegurando que solo uno esté activo a la vez.
+    \item \textbf{Mapa de Memoria Estricto:} Los arquitectos del sistema definen un mapa de memoria donde cada periférico tiene asignado un rango de direcciones fijo y no solapado (por ejemplo, el sensor de luz en una dirección y el de presión en otra distinta).
+    \item \textbf{Alineación de Memoria:} Se suelen usar offsets o desplazamientos estandarizados para separar físicamente los registros de control, estado y datos de los diferentes dispositivos.
+\end{itemize}
+
+\subsubsection{4. ¿Por qué se considera que el memory-mapped I/O simplifica el diseño del conjunto de instrucciones de un procesador? ¿Qué tipo de instrucciones adicionales serían necesarias si se usara E/S por puertos?}
+
+El Memory-Mapped I/O (MMIO) simplifica significativamente el diseño del conjunto de instrucciones (ISA) de un procesador porque permite tratar a los periféricos como si fueran celdas de memoria estándar. El procesador mantiene un diseño RISC más limpio, ya que no requiere lógica adicional en la unidad de control para decodificar instrucciones específicas de entrada/salida. Al ser tratada como memoria, la E/S puede aprovechar todos los modos de direccionamiento (base + desplazamiento, etc.) que el procesador ya posee para la RAM.
+
+Si el procesador utilizara un sistema de entrada/salida por puertos (espacio aislado), el conjunto de instrucciones tendría que ampliarse obligatoriamente con comandos específicos como: 
+\begin{itemize}
+    \item Instrucción IN para mover datos desde un puerto de hardware específico hacia un registro del procesador.
+    \item Instrucción OUT para enviar datos desde un registro hacia un puerto de hardware determinado.
+    \item Dependiendo de la arquitectura, podrían requerirse versiones para diferentes tamaños de datos (ej. INB para bytes, INW para palabras), complicando aún más el hardware de control.
+\end{itemize}
+
+\subsubsection{5. ¿Qué ocurre a nivel del bus de datos y direcciones cuando el procesador accede a una dirección de memoria que corresponde a un dispositivo? ¿Cómo sabe el hardware que debe acceder a un periférico en lugar de la RAM?}
+
+Cuando el procesador realiza una operación de acceso (lectura o escritura) a una dirección de memoria que corresponde a un periférico, el procesador coloca la dirección específica del registro del dispositivo (por ejemplo, la dirección de LuzControl o PresionControl) en el bus de direcciones. Simultáneamente, el procesador activa las señales de control necesarias, indicando si la operación es una lectura (lw) o una escritura (sw). En una escritura, el procesador coloca el dato (comando) en el bus de datos para que el periférico lo capture. En una lectura, el periférico coloca el valor solicitado (estado o datos medidos) en el bus de datos para que el procesador lo reciba.
+
+El hardware sabe que debe acceder al periférico en lugar de la RAM gracias al Decodificador de Direcciones. El decodificador está conectado físicamente al bus de direcciones y "observa" cada valor que el procesador solicita. El decodificador tiene grabadas las fronteras del mapa de memoria. Si la dirección está en el rango asignado a la RAM, activa la señal de habilitación de la memoria; si la dirección cae en el rango de un dispositivo, activa la señal de selección de ese periférico específico. El hardware está diseñado para que nunca se activen simultáneamente la RAM y un periférico para la misma dirección, evitando conflictos en el bus de datos.
+
+\subsubsection{6. ¿Es posible que un programa normal (sin privilegios) acceda a un dispositivo mapeado en memoria? ¿Qué mecanismos de protección existen para evitar accesos no autorizados?}
+
+En sistemas operativos modernos y complejos (como Linux, Windows o Android), no es posible que un programa de usuario normal acceda directamente a las direcciones de memoria de los dispositivos. Si un programa intentara hacer un lw o sw a una dirección de hardware, el sistema operativo generaría una excepción de segmentación (Segmentation Fault) y cerraría el programa. Sin embargo, en sistemas embebidos muy simples o en simuladores educativos como MARS, sí es posible el acceso directo, ya que estos entornos no implementan capas de abstracción ni protección de memoria.
+
+Mecanismos de protección existentes:
+\begin{itemize}
+    \item \textbf{Memoria Virtual y Paginación:} El sistema operativo utiliza tablas de páginas para aislar los procesos. Las direcciones físicas de los periféricos se mapean exclusivamente en el espacio de memoria del Kernel, siendo invisibles para el espacio de usuario.
+    \item \textbf{Unidad de Gestión de Memoria (MMU):} Es el componente de hardware que intercepta cada acceso a memoria. La MMU verifica si el proceso tiene los permisos necesarios (lectura/escritura/privilegio) para la dirección solicitada; si no los tiene, dispara una Excepción de Hardware.
+    \item \textbf{Modos de Operación del Procesador:} Los procesadores MIPS32 definen un "Modo Usuario" y un "Modo Kernel". El acceso a los rangos de memoria donde suelen residir los dispositivos está restringido únicamente al Modo Kernel.
+    \item \textbf{Llamadas al Sistema (Syscalls):} Para que un programa normal use un dispositivo, debe pedir permiso al Sistema Operativo mediante una syscall. El SO verifica la identidad del programa y realiza la operación en su nombre de forma segura.
+\end{itemize}
+
+\subsubsection{7. ¿Qué técnicas se pueden emplear para evitar esperas activas innecesarias al interactuar con dispositivos?}
+
+La espera activa o polling, utilizada en los ejercicios de esta práctica, consume ciclos de reloj innecesarios porque el procesador permanece en un bucle cerrado consultando el registro de estado del dispositivo. Para evitar este desperdicio de recursos, se emplean las siguientes técnicas:
+\begin{itemize}
+    \item \textbf{E/S por Interrupciones (Interrupt-Driven I/O):} Es la técnica más común. En lugar de que el procesador pregunte constantemente, el dispositivo envía una señal eléctrica (interrupción) al procesador cuando ha terminado su tarea o tiene datos listos. Esto permite que la CPU ejecute otras tareas mientras el periférico trabaja.
+    \item \textbf{Acceso Directo a Memoria (DMA - Direct Memory Access):} Se utiliza un controlador especial (DMA Controller) que se encarga de transferir grandes bloques de datos entre el dispositivo y la memoria RAM sin intervención constante de la CPU. El procesador solo interviene al inicio y al final de la transferencia.
+    \item \textbf{Sistemas Operativos Multitarea:} El programador puede utilizar llamadas al sistema que ponen al proceso en un estado de "espera" o "dormido" (blocking). El planificador del sistema operativo retira el proceso de la CPU y solo lo despierta cuando el hardware notifica que la operación de E/S ha concluido.
+    \item \textbf{Temporizadores y Timeouts:} En lugar de un bucle infinito, se pueden usar contadores o temporizadores para realizar consultas espaciadas, permitiendo que el procesador realice pequeñas tareas entre cada comprobación.
+\end{itemize}
+
+\subsubsection{8. Análisis y Discusión de los Resultados}
+
+Tras la implementación y ejecución de los tres ejercicios en el simulador MARS, se pueden extraer las siguientes conclusiones y observaciones técnicas:
+
+Se comprobó que el mapeo de E/S en memoria permite una interacción fluida con periféricos utilizando únicamente instrucciones estándar como lw y sw. El uso de etiquetas en la sección .data para simular registros de hardware facilitó la comprensión de cómo el procesador "ve" a los dispositivos como celdas de memoria ordinarias. Esta uniformidad simplifica el diseño del software, ya que no se requiere aprender un conjunto de instrucciones nuevo para cada sensor diferente.
+
+En el Ejercicio 1, se observó la importancia de validar el estado del sensor antes de proceder con la lectura de datos para evitar procesar valores erróneos de hardware. El Ejercicio 2 demostró que es posible implementar técnicas de "tolerancia a fallos" mediante reintentos automáticos. Se validó que, ante un error transitorio, una reinicialización del periférico puede recuperar la operatividad del sistema sin necesidad de intervención humana.
+
+El Ejercicio 3 puso de manifiesto la utilidad de los registros \$v0 y \$v1 para retornar múltiples datos simultáneamente, cumpliendo con las convenciones de la arquitectura MIPS. Asimismo, se confirmó que mover los resultados a registros preservados (\$s0, \$s1) en el main es vital para evitar que las llamadas al sistema (syscall) sobrescriban la información obtenida.
+
+Finalmente, aunque el Polling es sencillo de implementar, se discutió que mantiene al procesador ocupado en bucles de espera, lo cual es ineficiente en términos de consumo de energía y capacidad de cómputo. En escenarios reales con sensores lentos, este método impediría que el sistema realice otras tareas, sugiriendo que para sistemas más complejos sería preferible el uso de interrupciones.
+
+\section{Anexos}
+
+\subsection{Ejercicio 1: Sensor de Luz}
+
+\begin{lstlisting}[language=mips]
+##################################################
+# Procedimiento: InicializarSensorLuz
+##################################################
+InicializarSensorLuz:
+    li $t0, 1
+    sw $t0, LuzControl   # Escribir 0x1 para inicializar
+
+espera:
+    lw $t1, LuzEstado    # Leer estado del sensor
+    
+    li $t2, 1
+    beq $t1, $t2, listo  # Si es 1, el sensor esta listo
+    
+    li $t2, -1
+    beq $t1, $t2, error_init # Si es -1, hay error de hardware
+    
+    j espera             # Polling: seguir esperando si es 0
+
+listo:
+    li $v0, 0            # Retornar 0
+    jr $ra
+
+error_init:
+    li $v0, -1           # Retornar -1 (Fallo de Inicio)
+    jr $ra
+
+
+##################################################
+# Procedimiento: LeerLuminosidad
+##################################################
+LeerLuminosidad:
+    lw $t0, LuzEstado    # Verificar estado antes de leer datos
+    li $t1, -1
+    beq $t0, $t1, error  # Si el estado es error, saltar
+
+    lw $v0, LuzDatos     # Obtener valor de luminosidad
+    li $v1, 0            # Codigo 0: lectura correcta
+    jr $ra
+
+error:
+    li $v0, 0
+    li $v1, -1           # Codigo -1: error en lectura
+    jr $ra
+
+##################################################
+# Procedimiento: MostrarErrorInicializacion
+##################################################
+MostrarErrorInicializacion:
+    li $v0, 4
+    la $a0, msg3         # Imprimir el nuevo mensaje consistente
+    syscall
+    jr $ra
+\end{lstlisting}
+
+\subsection{Ejercicio 2: Sensor de Presión}
+
+\begin{lstlisting}[language=mips]
+#################################################
+# Procedimiento: InicializarSensorPresion
+#################################################
+InicializarSensorPresion:
+    li $t0, 5                # Cargar el comando de inicializacion (0x5)
+    sw $t0, PresionControl   # Escribir en el registro de control del sensor
+
+espera:
+    lw $t1, PresionEstado    # Leer el estado actual del hardware
+    li $t2, 1                # Valor de "Lectura valida / Listo"
+    beq $t1, $t2, listo      # Si el estado es 1, el sensor esta preparado
+    j espera                 # Polling: reintentar lectura de estado si es 0
+
+listo:
+    jr $ra                   # Retornar al procedimiento que hizo la llamada
+
+#################################################
+# Procedimiento: LeerPresion
+#################################################
+LeerPresion:
+    # Gestion de la Pila (Stack)
+    addi $sp, $sp, -4
+    sw $ra, 0($sp)           
+
+    # Intento de lectura inicial
+    lw $t0, PresionEstado    # Cargar estado del sensor
+
+    li $t1, -1               # Valor que representa error transitorio
+    beq $t0, $t1, reintento  # Si hay error (-1), saltar a la fase de reintento
+
+    # Caso Exito (Primer intento)
+    lw $v0, PresionDatos     # Obtener el valor de presion en $v0
+    li $v1, 0                # Codigo de estado 0: Lectura correcta
+    j salir_leer             # Ir al epilogo para limpiar la pila y salir
+
+reintento:
+    # Logica de Recuperacion: Reiniciar y probar de nuevo una vez
+    jal InicializarSensorPresion
+
+    lw $t0, PresionEstado    # Volver a verificar el estado tras reiniciar
+    li $t1, -1
+    beq $t0, $t1, error      # Si sigue en -1, el error es definitivo
+
+    # Caso Exito (Tras reintento)
+    lw $v0, PresionDatos     # Obtener valor de presion
+    li $v1, 0                # Codigo de estado 0: Lectura correcta
+    j salir_leer
+
+error:
+    # Caso Fallo Definitivo
+    li $v0, 0                # Valor por defecto
+    li $v1, -1               # Codigo de estado -1: Error persistente
+
+salir_leer:
+    # Epilogo: Restaurar la direccion de retorno original y limpiar pila
+    lw $ra, 0($sp)           
+    addi $sp, $sp, 4         
+    jr $ra                   # Volver al main
+\end{lstlisting}
+
+\subsection{Ejercicio 3: Sensor de Tensión}
+
+\begin{lstlisting}[language=mips]
+#################################################
+# Procedimiento: controlador_tension
+#################################################
+controlador_tension:
+    li $t0, 1                # Cargar valor de inicio (1)
+    sw $t0, TensionControl   # Ordenar al hardware que empiece a medir
+
+espera_tension:
+    lw $t1, TensionEstado    # Leer el estado actual del dispositivo
+    beq $t1, $zero, espera_tension # Si el estado es 0 (midiendo), repetir bucle
+
+    # El hardware ya puso el estado en 1, los datos son validos
+    lw $v0, TensionSistol    # Retornar primer valor en $v0
+    lw $v1, TensionDiastol   # Retornar segundo valor en $v1
+
+    # Regresar al programa principal
+    jr $ra
+\end{lstlisting}
+
+\end{document}
