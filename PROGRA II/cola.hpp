@@ -3,46 +3,46 @@
 
 #include<iostream>
 
-//Clase Nodo
+//Clase nodoc
 template<class element>
-class nodo{
+class nodoc{
     private:
         element data;
-        nodo<element> *next;
+        nodoc<element> *next;
 
     public:
 
-    nodo(element data): data(data), next(NULL){}
+    nodoc(element data): data(data), next(NULL){}
 
     element getData() const;
 
     void setData(element d);
 
-    void setNext(nodo<element>* n);
+    void setNext(nodoc<element>* n);
 
-    nodo<element>* getNext() const;
+    nodoc<element>* getNext() const;
 
-    ~nodo(){}
+    ~nodoc(){}
 
 };
 
 template<class element>
-element nodo<element>::getData() const{
+element nodoc<element>::getData() const{
     return this->data;
 }
 
 template<class element>
-void nodo<element>::setData(element d){
+void nodoc<element>::setData(element d){
     this->data=d;
 }
 
 template<class element>
-void nodo<element>::setNext(nodo<element>* n){
+void nodoc<element>::setNext(nodoc<element>* n){
     this->next=n;
 }
 
 template<class element>
-nodo<element>* nodo<element>::getNext() const{
+nodoc<element>* nodoc<element>::getNext() const{
     return this->next;
 }
 
@@ -50,7 +50,7 @@ nodo<element>* nodo<element>::getNext() const{
 template<class element>
 class cola{
     private:
-        nodo<element> *primero, *ultimo;
+        nodoc<element> *primero, *ultimo;
         int n;
     public:
 
@@ -86,7 +86,7 @@ cola<element>::cola(const cola<element> &c){
         this->ultimo=NULL;
         this->primero=NULL;
     }else{
-        nodo<element> *aux=c.primero;
+        nodoc<element> *aux=c.primero;
 
         while(aux){
             this->encolar(aux->getData());
@@ -105,7 +105,7 @@ cola<element>& cola<element>::operator=(const cola<element> &c){
             this->ultimo=NULL;
             this->primero=NULL;
         }else{
-            nodo<element> *aux=c.primero;
+            nodoc<element> *aux=c.primero;
 
             while(aux){
                 this->encolar(aux->getData());
@@ -128,9 +128,9 @@ element cola<element>::getUltimo() const{
 
 template<class element>
 void cola<element>::encolar(element e){
-    nodo<element> *nuevo, *aux;
+    nodoc<element> *nuevo;
 
-    nuevo=new nodo<element>(e);
+    nuevo=new nodoc<element>(e);
 
     if(this->ultimo){
         this->ultimo->setNext(nuevo);
@@ -144,7 +144,7 @@ void cola<element>::encolar(element e){
 
 template<class element>
 void cola<element>::desencolar(){
-    nodo<element> *aux=this->primero;
+    nodoc<element> *aux=this->primero;
 
     this->primero=this->primero->getNext();
     delete aux;
