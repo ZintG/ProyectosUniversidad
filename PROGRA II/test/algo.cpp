@@ -1,37 +1,57 @@
 #include<iostream>
-#include<cstdio>
 #include "lista.hpp"
-#include "cola.hpp"
-#include "pila.hpp"
 
 using namespace std;
 
 int main(){
-    string saludo="Hola Mundo";
-    nodo<int> n(5);
 
-    lista<int> l;
+    listaDoble<int> testCircular;
 
-    pila<int> p;
+    int pos=1;
+    for(int i=4; i<=10; i++){
+        testCircular.insertar(i, pos);
+        pos++;
+    }
 
-    cola<int> c;
+    cout<<"La lista tiene los elementos: ";
 
-    l.insertar(1,1);
-
-    p.apilar(2);
-
-    c.encolar(3);
+    for(int i=1; i<=testCircular.getN(); i++){
+        if(i<testCircular.getN()){
+            cout<<testCircular.consultar(i)<<" ,";
+        }else{
+            cout<<testCircular.consultar(i)<<"."<<endl;
+        }
+    }
     
-    cout<<"Lista: "<<l.consultar(1)<<endl;
+    testCircular.hacerCircular();
+    cout<<"La lista tiene los elementos: ";
 
-    cout<<"Pila: "<<p.getTope()<<endl;
+    int numaux=testCircular.getN()+(testCircular.getN() /2);
+    int indice2=1;
 
-    cout<<"Cola: "<<c.getPrimero()<<endl;
+    for(int i=1; i<=numaux; i++){
+        if(i<=testCircular.getN()){
+            cout<<testCircular.consultar(i)<<" ,";
+        }else{
+            cout<<testCircular.consultar(indice2)*2<<" ";
+            indice2++;
+        }
+    }
+    cout<<endl;
 
-    cout<<"Nodo: "<<n.getData()<<endl;
-    cout<<saludo<<endl;
+    cout<<"el numero 4 esta en la posicion "<<testCircular.buscar(4)<<endl;
 
-    getchar();
+    listaDoble<int> testCircular2= testCircular2.invertir( testCircular);
+
+    cout<<"La lista invertida tiene los elementos: ";
+
+    for(int i=1; i<=testCircular2.getN(); i++){
+        if(i<testCircular2.getN()){
+            cout<<testCircular2.consultar(i)<<" ,";
+        }else{
+            cout<<testCircular2.consultar(i)<<" ."<<endl;
+        }
+    }
 
     return 0;
 }

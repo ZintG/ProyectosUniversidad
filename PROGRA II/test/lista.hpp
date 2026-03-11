@@ -380,13 +380,12 @@ template<class element>
         ///Concatena la lista l2 al final de la lista actual
         void concatenar(const listaDoble<element> &l2);
 
-        /*
+        /// Convierte la lista en circular
         void hacerCircular();
 
+        /// Desconecta el final del inicio en una lista circular
         void deshacerCircular();
 
-        Estos metodos no son compatibles con buscar ni invertir en su forma actual, solo usar si es necesario.
-        */
         listaDoble<element>& operator=(const listaDoble<element> &l);
 
         ~listaDoble(){
@@ -407,7 +406,7 @@ listaDoble<element>::listaDoble(const listaDoble<element> &l){
         aux2= new nodoDoble<element>(aux1->getData());
         this->primero=aux2;
         aux1=aux1->getNext();
-        while(aux1){
+        for(int i=2; i<=l.n; i++){
             aux2->setNext(new nodoDoble<element>(aux1->getData()));
             aux2->getNext()->setPrevious(aux2);
             aux2=aux2->getNext();
@@ -517,13 +516,11 @@ void listaDoble<element>::eliminar(int pos){
 template<class element>
 int listaDoble<element>::buscar(element e) const{
     nodoDoble<element> *aux=this->primero;
-    int pos=1;
-    while(aux){
+    for(int i=1; i<=this->n; i++){
         if(aux->getData()==e){
-            return pos;
+            return i;
         }
         aux=aux->getNext();
-        pos++;
     }
     return -1;
 }
@@ -532,7 +529,7 @@ template<class element>
 listaDoble<element> listaDoble<element>::invertir(const listaDoble<element> &l){
     listaDoble<element> l2;
     nodoDoble<element> *aux=l.primero;
-    while(aux){
+    for(int i=1; i<=l.n; i++){
         l2.insertar(aux->getData(), 1);
         aux=aux->getNext();
     }
@@ -542,7 +539,7 @@ listaDoble<element> listaDoble<element>::invertir(const listaDoble<element> &l){
 template<class element>
 void listaDoble<element>::vaciar(){
     nodoDoble<element> *aux=this->primero;
-    while(aux){
+    for(int i=1; i<=this->n; i++){
         nodoDoble<element> *aux2=aux;
         aux=aux->getNext();
         delete aux2;
@@ -586,7 +583,7 @@ void listaDoble<element>::concatenar(const listaDoble<element> &l2){
         aux=aux->getNext();
     }
 }
-/*
+
 template<class element>
 void listaDoble<element>::hacerCircular(){
     if(this->n >0){
@@ -602,13 +599,13 @@ void listaDoble<element>::deshacerCircular(){
         this->primero->setPrevious(NULL);
     }
 }
-*/
+
 template<class element>
 listaDoble<element>& listaDoble<element>::operator=(const listaDoble<element> &l){
     if(this!=&l){
         this->vaciar();
         nodoDoble<element> *aux=l.primero;
-        while(aux){
+        for(int i=1; i<=l.n; i++){
             this->insertar(aux->getData(), this->n+1);
             aux=aux->getNext();
         }
