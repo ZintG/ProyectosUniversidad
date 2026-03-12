@@ -1,70 +1,70 @@
-#ifndef COLA_H
-#define COLA_H
+#ifndef Cola_H
+#define Cola_H
 
 #include<iostream>
 
-//Clase nodoc
+//Clase NodoC
 template<class element>
-class nodoc{
+class NodoC{
     private:
         element data;
-        nodoc<element> *next;
+        NodoC<element> *next;
 
     public:
 
-    nodoc(element data): data(data), next(NULL){}
+    NodoC(element data): data(data), next(NULL){}
 
     element getData() const;
 
     void setData(element d);
 
-    void setNext(nodoc<element>* n);
+    void setNext(NodoC<element>* n);
 
-    nodoc<element>* getNext() const;
+    NodoC<element>* getNext() const;
 
-    ~nodoc(){}
+    ~NodoC(){}
 
 };
 
 template<class element>
-element nodoc<element>::getData() const{
+element NodoC<element>::getData() const{
     return this->data;
 }
 
 template<class element>
-void nodoc<element>::setData(element d){
+void NodoC<element>::setData(element d){
     this->data=d;
 }
 
 template<class element>
-void nodoc<element>::setNext(nodoc<element>* n){
+void NodoC<element>::setNext(NodoC<element>* n){
     this->next=n;
 }
 
 template<class element>
-nodoc<element>* nodoc<element>::getNext() const{
+NodoC<element>* NodoC<element>::getNext() const{
     return this->next;
 }
 
 //Clase Cola
 template<class element>
-class cola{
+class Cola{
     private:
-        nodoc<element> *primero, *ultimo;
+        NodoC<element> *primero, *ultimo;
         int n;
     public:
 
-        cola(): primero(NULL), ultimo(NULL), n(0){}
+        Cola(): primero(NULL), ultimo(NULL), n(0){}
 
-        cola(const cola<element> &c);
+        Cola(const Cola<element> &c);
 
         element getPrimero() const;
 
         element getUltimo() const;
 
-        void encolar(element e);
+        void enColar(element e);
 
-        void desencolar();
+        void desenColar();
 
         bool esVacia() const;
 
@@ -72,31 +72,31 @@ class cola{
 
         void vaciar();
 
-        cola<element>& operator=(const cola<element> &c);
+        Cola<element>& operator=(const Cola<element> &c);
 
-        ~cola(){
+        ~Cola(){
             this->vaciar();
         }
 };
 
 template<class element>
-cola<element>::cola(const cola<element> &c){
+Cola<element>::Cola(const Cola<element> &c){
     if(c.esVacia()){
         this->n=0;
         this->ultimo=NULL;
         this->primero=NULL;
     }else{
-        nodoc<element> *aux=c.primero;
+        NodoC<element> *aux=c.primero;
 
         while(aux){
-            this->encolar(aux->getData());
+            this->enColar(aux->getData());
             aux=aux->getNext();
         }
     }
 }
 
 template<class element>
-cola<element>& cola<element>::operator=(const cola<element> &c){
+Cola<element>& Cola<element>::operator=(const Cola<element> &c){
     if(this!= &c){
         this->vaciar();
         
@@ -105,10 +105,10 @@ cola<element>& cola<element>::operator=(const cola<element> &c){
             this->ultimo=NULL;
             this->primero=NULL;
         }else{
-            nodoc<element> *aux=c.primero;
+            NodoC<element> *aux=c.primero;
 
             while(aux){
-                this->encolar(aux->getData());
+                this->enColar(aux->getData());
                 aux=aux->getNext();
             }
         }
@@ -117,20 +117,20 @@ cola<element>& cola<element>::operator=(const cola<element> &c){
 }
 
 template<class element>
-element cola<element>::getPrimero() const{
+element Cola<element>::getPrimero() const{
     return this->primero->getData();
 }
 
 template<class element>
-element cola<element>::getUltimo() const{
+element Cola<element>::getUltimo() const{
     return this->ultimo->getData();
 }
 
 template<class element>
-void cola<element>::encolar(element e){
-    nodoc<element> *nuevo;
+void Cola<element>::enColar(element e){
+    NodoC<element> *nuevo;
 
-    nuevo=new nodoc<element>(e);
+    nuevo=new NodoC<element>(e);
 
     if(this->ultimo){
         this->ultimo->setNext(nuevo);
@@ -143,8 +143,8 @@ void cola<element>::encolar(element e){
 }
 
 template<class element>
-void cola<element>::desencolar(){
-    nodoc<element> *aux=this->primero;
+void Cola<element>::desenColar(){
+    NodoC<element> *aux=this->primero;
 
     this->primero=this->primero->getNext();
     delete aux;
@@ -157,7 +157,7 @@ void cola<element>::desencolar(){
 }
 
 template<class element>
-bool cola<element>::esVacia() const{
+bool Cola<element>::esVacia() const{
     if(n==0){
         return true;
     }
@@ -165,14 +165,14 @@ bool cola<element>::esVacia() const{
 }
 
 template<class element>
-int cola<element>::getN() const{
+int Cola<element>::getN() const{
     return this->n;
 }
 
 template<class element>
-void cola<element>::vaciar(){
+void Cola<element>::vaciar(){
     while(this->n >0){
-        this->desencolar();
+        this->desenColar();
     }
 }
 

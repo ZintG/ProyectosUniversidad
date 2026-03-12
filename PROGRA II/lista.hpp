@@ -1,125 +1,125 @@
-#ifndef LISTA_H
-#define LISTA_H
+#ifndef Lista_H
+#define Lista_H
 
 #include<iostream>
 
-//Clase nodoDoble para listas doblemente enlazadas
+//Clase NodoDoble para Listas doblemente enlazadas
 template<class element>
 
-class nodoDoble{
+class NodoDoble{
     private:
         element data;
-        nodoDoble<element> *next, *previous;
+        NodoDoble<element> *next, *previous;
 
     public:
 
-    nodoDoble(element data): data(data), next(NULL), previous(NULL){}
+    NodoDoble(element data): data(data), next(NULL), previous(NULL){}
 
     element getData() const;
 
     void setData(element d);
 
-    void setNext(nodoDoble<element>* n);
+    void setNext(NodoDoble<element>* n);
 
-    nodoDoble<element>* getNext() const;
+    NodoDoble<element>* getNext() const;
 
-    void setPrevious(nodoDoble<element>* p);
+    void setPrevious(NodoDoble<element>* p);
 
-    nodoDoble<element>* getPrevious() const;
+    NodoDoble<element>* getPrevious() const;
 
-    ~nodoDoble(){}
+    ~NodoDoble(){}
 
 };
 
 template<class element>
-element nodoDoble<element>::getData() const{
+element NodoDoble<element>::getData() const{
     return this->data;
 }
 
 template<class element>
-void nodoDoble<element>::setData(element d){
+void NodoDoble<element>::setData(element d){
     this->data=d;
 }
 
 template<class element>
-void nodoDoble<element>::setNext(nodoDoble<element>* n){
+void NodoDoble<element>::setNext(NodoDoble<element>* n){
     this->next=n;
 }
 
 template<class element>
-nodoDoble<element>* nodoDoble<element>::getNext() const{
+NodoDoble<element>* NodoDoble<element>::getNext() const{
     return this->next;
 }
 
 template<class element>
-nodoDoble<element>* nodoDoble<element>::getPrevious() const{
+NodoDoble<element>* NodoDoble<element>::getPrevious() const{
     return this->previous;
 }
 
 template<class element>
-void nodoDoble<element>::setPrevious(nodoDoble<element>* p){
+void NodoDoble<element>::setPrevious(NodoDoble<element>* p){
     this->previous=p;
 }
 
-//Clase Nodo para listas simplemente enlazadas
+//Clase Nodo para Listas simplemente enlazadas
 
 template<class element>
 
-class nodo{
+class Nodo{
     private:
         element data;
-        nodo<element> *next;
+        Nodo<element> *next;
 
     public:
 
-    nodo(element data): data(data), next(NULL){}
+    Nodo(element data): data(data), next(NULL){}
 
     element getData() const;
 
     void setData(element d);
 
-    void setNext(nodo<element>* n);
+    void setNext(Nodo<element>* n);
 
-    nodo<element>* getNext() const;
+    Nodo<element>* getNext() const;
 
-    ~nodo(){}
+    ~Nodo(){}
 
 };
 
 template<class element>
-element nodo<element>::getData() const{
+element Nodo<element>::getData() const{
     return this->data;
 }
 
 template<class element>
-void nodo<element>::setData(element d){
+void Nodo<element>::setData(element d){
     this->data=d;
 }
 
 template<class element>
-void nodo<element>::setNext(nodo<element>* n){
+void Nodo<element>::setNext(Nodo<element>* n){
     this->next=n;
 }
 
 template<class element>
-nodo<element>* nodo<element>::getNext() const{
+Nodo<element>* Nodo<element>::getNext() const{
     return this->next;
 }
 
 //Clase Lista simplemente enlazada
 
 template<class element>
-class lista{
+class Lista{
     private:
-        nodo<element> *primero, *ultimo;
+        Nodo<element> *primero, *ultimo;
         int n;
     public:
-        lista(): primero(NULL), ultimo(NULL), n(0){}
+        Lista(): primero(NULL), ultimo(NULL), n(0){}
 
         ///Constructor de copia profunda
-        lista (const lista<element> &l);
+        Lista (const Lista<element> &l);
 
-        ///Obtener tamaño de la lista
+        ///Obtener tamaño de la Lista
         int getN() const;
 
         ///Insertar elemento en la posición pos>=1
@@ -134,10 +134,10 @@ class lista{
         ///retorna la posición del elemento e, si no se encuentra retorna -1
         int buscar(element e) const;
 
-        ///Retorna una lista nueva con elementos de l invertidos
-        lista<element> invertir(const lista<element> &l);
+        ///Retorna una Lista nueva con elementos de l invertidos
+        Lista<element> invertir(const Lista<element> &l);
 
-        /// Vacia la lista
+        /// Vacia la Lista
         void vaciar();
 
         bool esVacia() const;
@@ -145,31 +145,31 @@ class lista{
         ///Intercambia los elementos en las posiciones pos1 y pos2
         void intercambiar(int pos1, int pos2);
 
-        ///Concatena la lista l2 al final de la lista actual
-        void concatenar(const lista<element> &l2);
+        ///Concatena la Lista l2 al final de la Lista actual
+        void concatenar(const Lista<element> &l2);
 
-        lista<element>& operator=(const lista<element> &l);
+        Lista<element>& operator=(const Lista<element> &l);
 
-        ~lista(){
+        ~Lista(){
             this->vaciar();
         }
 };
 
 template<class element>
-lista<element>::lista(const lista<element> &l){
+Lista<element>::Lista(const Lista<element> &l){
     this->n=l.n;
     if(l.esVacia()){
         this->primero=NULL;
         this->ultimo=NULL;
     }else{
-        nodo<element> *aux1, *aux2;
+        Nodo<element> *aux1, *aux2;
 
         aux1=l.primero;
-        aux2= new nodo<element>(aux1->getData());
+        aux2= new Nodo<element>(aux1->getData());
         this->primero=aux2;
         aux1=aux1->getNext();
         while(aux1){
-            aux2->setNext(new nodo<element>(aux1->getData()));
+            aux2->setNext(new Nodo<element>(aux1->getData()));
             aux2=aux2->getNext();
             aux1=aux1->getNext();
         }
@@ -178,21 +178,21 @@ lista<element>::lista(const lista<element> &l){
 }
 
 template<class element>
-int lista<element>::getN() const{
+int Lista<element>::getN() const{
     return this->n;
 }
 
 template<class element>
-void lista<element>::insertar(element e, int pos){
+void Lista<element>::insertar(element e, int pos){
     if(pos==1){
-        nodo<element> *nuevo= new nodo<element>(e);
+        Nodo<element> *nuevo= new Nodo<element>(e);
         nuevo->setNext(this->primero);
         this->primero=nuevo;
         if(this->n==0){
             this->ultimo=nuevo;
         }
     }else if(pos>n){
-        nodo<element> *nuevo= new nodo<element>(e);
+        Nodo<element> *nuevo= new Nodo<element>(e);
         if(this->ultimo){
             this->ultimo->setNext(nuevo);
         }
@@ -201,8 +201,8 @@ void lista<element>::insertar(element e, int pos){
             this->primero=nuevo;
         }
     }else{
-        nodo<element> *nuevo= new nodo<element>(e);
-        nodo<element> *aux=this->primero;
+        Nodo<element> *nuevo= new Nodo<element>(e);
+        Nodo<element> *aux=this->primero;
         for(int i=1; i<pos-1; i++){
             aux=aux->getNext();
         }
@@ -215,9 +215,9 @@ void lista<element>::insertar(element e, int pos){
 }
 
 template<class element>
-element lista<element>::consultar(int pos) const{
+element Lista<element>::consultar(int pos) const{
     if(pos>=1 && pos<=this->n){
-        nodo<element> *aux=this->primero;
+        Nodo<element> *aux=this->primero;
         for(int i=1; i<pos; i++){
             aux=aux->getNext();
         }
@@ -226,17 +226,17 @@ element lista<element>::consultar(int pos) const{
 }
 
 template<class element>
-void lista<element>::eliminar(int pos){
+void Lista<element>::eliminar(int pos){
     if(pos==1){
-        nodo<element> *aux=this->primero;
+        Nodo<element> *aux=this->primero;
         this->primero=this->primero->getNext();
         delete aux;
     }else{
-        nodo<element> *aux=this->primero;
+        Nodo<element> *aux=this->primero;
         for(int i=1; i<pos-1; i++){
             aux=aux->getNext();
         }
-        nodo<element> *aux2=aux->getNext();
+        Nodo<element> *aux2=aux->getNext();
         aux->setNext(aux2->getNext());
         if(pos==this->n){
             this->ultimo=aux;
@@ -252,8 +252,8 @@ void lista<element>::eliminar(int pos){
 }
 
 template<class element>
-int lista<element>::buscar(element e) const{
-    nodo<element> *aux=this->primero;
+int Lista<element>::buscar(element e) const{
+    Nodo<element> *aux=this->primero;
     int pos=1;
     while(aux){
         if(aux->getData()==e){
@@ -266,9 +266,9 @@ int lista<element>::buscar(element e) const{
 }
 
 template<class element>
-lista<element> lista<element>::invertir(const lista<element> &l){
-    lista<element> l2;
-    nodo<element> *aux=l.primero;
+Lista<element> Lista<element>::invertir(const Lista<element> &l){
+    Lista<element> l2;
+    Nodo<element> *aux=l.primero;
     while(aux){
         l2.insertar(aux->getData(), 1);
         aux=aux->getNext();
@@ -277,10 +277,10 @@ lista<element> lista<element>::invertir(const lista<element> &l){
 }
 
 template<class element>
-void lista<element>::vaciar(){
-    nodo<element> *aux=this->primero;
+void Lista<element>::vaciar(){
+    Nodo<element> *aux=this->primero;
     while(aux){
-        nodo<element> *aux2=aux;
+        Nodo<element> *aux2=aux;
         aux=aux->getNext();
         delete aux2;
     }
@@ -290,7 +290,7 @@ void lista<element>::vaciar(){
 }
 
 template<class element>
-bool lista<element>::esVacia() const{
+bool Lista<element>::esVacia() const{
     if(this->n==0){
         return true;
     }else{
@@ -299,13 +299,13 @@ bool lista<element>::esVacia() const{
 }
 
 template<class element>
-void lista<element>::intercambiar(int pos1, int pos2){
+void Lista<element>::intercambiar(int pos1, int pos2){
     if(pos1>=1 && pos1<=this->n && pos2>=1 && pos2<=this->n){
-        nodo<element> *aux1=this->primero;
+        Nodo<element> *aux1=this->primero;
         for(int i=1; i<pos1; i++){
             aux1=aux1->getNext();
         }
-        nodo<element> *aux2=this->primero;
+        Nodo<element> *aux2=this->primero;
         for(int i=1; i<pos2; i++){
             aux2=aux2->getNext();
         }
@@ -316,8 +316,8 @@ void lista<element>::intercambiar(int pos1, int pos2){
 }
 
 template<class element>
-void lista<element>::concatenar(const lista<element> &l2){
-    nodo<element> *aux=l2.primero;    
+void Lista<element>::concatenar(const Lista<element> &l2){
+    Nodo<element> *aux=l2.primero;    
     while(aux){
         this->insertar(aux->getData(), this->n+1);
         aux=aux->getNext();
@@ -325,11 +325,11 @@ void lista<element>::concatenar(const lista<element> &l2){
 }
 
 template<class element>
-lista<element>& lista<element>::operator=(const lista<element> &l){
+Lista<element>& Lista<element>::operator=(const Lista<element> &l){
     if(this!=&l){
         this->vaciar();
 
-        nodo<element> *aux=l.primero;
+        Nodo<element> *aux=l.primero;
         while(aux){
             this->insertar(aux->getData(), this->n+1);
             aux=aux->getNext();
@@ -341,17 +341,17 @@ lista<element>& lista<element>::operator=(const lista<element> &l){
 //Clase Lista doblemente enlazada
 
 template<class element>
-    class listaDoble{
+    class ListaDoble{
     private:
-        nodoDoble<element> *primero, *ultimo;
+        NodoDoble<element> *primero, *ultimo;
         int n;
     public:
-        listaDoble(): primero(NULL), ultimo(NULL), n(0){}
+        ListaDoble(): primero(NULL), ultimo(NULL), n(0){}
 
         ///Constructor de copia profunda
-        listaDoble (const listaDoble<element> &l);
+        ListaDoble (const ListaDoble<element> &l);
 
-        ///Obtener tamaño de la lista
+        ///Obtener tamaño de la Lista
         int getN() const;
 
         ///Insertar elemento en la posición pos>=1
@@ -366,10 +366,10 @@ template<class element>
         ///retorna la posición del elemento e, si no se encuentra retorna -1
         int buscar(element e) const;
 
-        ///Retorna una lista nueva con elementos de l invertidos
-        listaDoble<element> invertir(const listaDoble<element> &l);
+        ///Retorna una Lista nueva con elementos de l invertidos
+        ListaDoble<element> invertir(const ListaDoble<element> &l);
 
-        ///Vacia la lista
+        ///Vacia la Lista
         void vaciar();
 
         bool esVacia() const;
@@ -377,37 +377,37 @@ template<class element>
         ///Intercambia los elementos en las posiciones pos1 y pos2
         void intercambiar(int pos1, int pos2);
 
-        ///Concatena la lista l2 al final de la lista actual
-        void concatenar(const listaDoble<element> &l2);
+        ///Concatena la Lista l2 al final de la Lista actual
+        void concatenar(const ListaDoble<element> &l2);
 
-        /// Convierte la lista en circular
+        /// Convierte la Lista en circular
         void hacerCircular();
 
-        /// Desconecta el final del inicio en una lista circular
+        /// Desconecta el final del inicio en una Lista circular
         void deshacerCircular();
 
-        listaDoble<element>& operator=(const listaDoble<element> &l);
+        ListaDoble<element>& operator=(const ListaDoble<element> &l);
 
-        ~listaDoble(){
+        ~ListaDoble(){
             this->vaciar();
         }
     };
 
 template<class element>
-listaDoble<element>::listaDoble(const listaDoble<element> &l){
+ListaDoble<element>::ListaDoble(const ListaDoble<element> &l){
     this->n=l.n;
     if(l.esVacia()){
         this->primero=NULL;
         this->ultimo=NULL;
     }else{
-        nodoDoble<element> *aux1, *aux2;
+        NodoDoble<element> *aux1, *aux2;
 
         aux1=l.primero;
-        aux2= new nodoDoble<element>(aux1->getData());
+        aux2= new NodoDoble<element>(aux1->getData());
         this->primero=aux2;
         aux1=aux1->getNext();
         for(int i=2; i<=l.n; i++){
-            aux2->setNext(new nodoDoble<element>(aux1->getData()));
+            aux2->setNext(new NodoDoble<element>(aux1->getData()));
             aux2->getNext()->setPrevious(aux2);
             aux2=aux2->getNext();
             aux1=aux1->getNext();
@@ -417,14 +417,14 @@ listaDoble<element>::listaDoble(const listaDoble<element> &l){
 }
 
 template<class element>
-int listaDoble<element>::getN() const{
+int ListaDoble<element>::getN() const{
     return this->n;
 }
 
 template<class element>
-void listaDoble<element>::insertar(element e, int pos){
+void ListaDoble<element>::insertar(element e, int pos){
     if(pos==1){
-        nodoDoble<element> *nuevo= new nodoDoble<element>(e);
+        NodoDoble<element> *nuevo= new NodoDoble<element>(e);
         nuevo->setNext(this->primero);
         if(this->primero){
             this->primero->setPrevious(nuevo);
@@ -434,7 +434,7 @@ void listaDoble<element>::insertar(element e, int pos){
             this->ultimo=nuevo;
         }
     }else if(pos>n){
-        nodoDoble<element> *nuevo= new nodoDoble<element>(e);
+        NodoDoble<element> *nuevo= new NodoDoble<element>(e);
         nuevo->setPrevious(this->ultimo);
         if(this->ultimo){
             this->ultimo->setNext(nuevo);
@@ -444,8 +444,8 @@ void listaDoble<element>::insertar(element e, int pos){
             this->primero=nuevo;
         }
     }else{
-        nodoDoble<element> *nuevo= new nodoDoble<element>(e);
-        nodoDoble<element> *aux=this->primero;
+        NodoDoble<element> *nuevo= new NodoDoble<element>(e);
+        NodoDoble<element> *aux=this->primero;
         for(int i=1; i<pos-1; i++){
             aux=aux->getNext();
         }
@@ -460,10 +460,10 @@ void listaDoble<element>::insertar(element e, int pos){
 }
 
 template<class element>
-element listaDoble<element>::consultar(int pos) const{
+element ListaDoble<element>::consultar(int pos) const{
     if(pos>=1 && pos<= this->n){
         int mitad=this->n/2;
-        nodoDoble<element> *aux;
+        NodoDoble<element> *aux;
         if(pos<=mitad){
             aux=this->primero;
             for(int i=1; i<pos; i++){
@@ -481,20 +481,20 @@ element listaDoble<element>::consultar(int pos) const{
 }
 
 template<class element>
-void listaDoble<element>::eliminar(int pos){
+void ListaDoble<element>::eliminar(int pos){
     if(pos==1){
-        nodoDoble<element> *aux=this->primero;
+        NodoDoble<element> *aux=this->primero;
         this->primero=this->primero->getNext();
         if(this->primero){
             this->primero->setPrevious(NULL);
         }
         delete aux;
     }else{
-        nodoDoble<element> *aux=this->primero;
+        NodoDoble<element> *aux=this->primero;
         for(int i=1; i<pos-1; i++){
             aux=aux->getNext();
         }
-        nodoDoble<element> *aux2=aux->getNext();
+        NodoDoble<element> *aux2=aux->getNext();
         aux->setNext(aux2->getNext());
         if(aux2->getNext()){
             aux2->getNext()->setPrevious(aux);
@@ -514,8 +514,8 @@ void listaDoble<element>::eliminar(int pos){
 }
 
 template<class element>
-int listaDoble<element>::buscar(element e) const{
-    nodoDoble<element> *aux=this->primero;
+int ListaDoble<element>::buscar(element e) const{
+    NodoDoble<element> *aux=this->primero;
     for(int i=1; i<=this->n; i++){
         if(aux->getData()==e){
             return i;
@@ -526,9 +526,9 @@ int listaDoble<element>::buscar(element e) const{
 }
 
 template<class element>
-listaDoble<element> listaDoble<element>::invertir(const listaDoble<element> &l){
-    listaDoble<element> l2;
-    nodoDoble<element> *aux=l.primero;
+ListaDoble<element> ListaDoble<element>::invertir(const ListaDoble<element> &l){
+    ListaDoble<element> l2;
+    NodoDoble<element> *aux=l.primero;
     for(int i=1; i<=l.n; i++){
         l2.insertar(aux->getData(), 1);
         aux=aux->getNext();
@@ -537,10 +537,10 @@ listaDoble<element> listaDoble<element>::invertir(const listaDoble<element> &l){
 }
 
 template<class element>
-void listaDoble<element>::vaciar(){
-    nodoDoble<element> *aux=this->primero;
+void ListaDoble<element>::vaciar(){
+    NodoDoble<element> *aux=this->primero;
     for(int i=1; i<=this->n; i++){
-        nodoDoble<element> *aux2=aux;
+        NodoDoble<element> *aux2=aux;
         aux=aux->getNext();
         delete aux2;
     }
@@ -550,7 +550,7 @@ void listaDoble<element>::vaciar(){
 }
 
 template<class element>
-bool listaDoble<element>::esVacia() const{
+bool ListaDoble<element>::esVacia() const{
     if(this->n==0){
         return true;
     }else{
@@ -559,13 +559,13 @@ bool listaDoble<element>::esVacia() const{
 }
 
 template<class element>
-void listaDoble<element>::intercambiar(int pos1, int pos2){
+void ListaDoble<element>::intercambiar(int pos1, int pos2){
     if(pos1>=1 && pos1<=this->n && pos2>=1 && pos2<=this->n){
-        nodoDoble<element> *aux1=this->primero;
+        NodoDoble<element> *aux1=this->primero;
         for(int i=1; i<pos1; i++){
             aux1=aux1->getNext();
         }
-        nodoDoble<element> *aux2=this->primero;
+        NodoDoble<element> *aux2=this->primero;
         for(int i=1; i<pos2; i++){
             aux2=aux2->getNext();
         }
@@ -576,8 +576,8 @@ void listaDoble<element>::intercambiar(int pos1, int pos2){
 }
 
 template<class element>
-void listaDoble<element>::concatenar(const listaDoble<element> &l2){
-    nodoDoble<element> *aux=l2.primero;    
+void ListaDoble<element>::concatenar(const ListaDoble<element> &l2){
+    NodoDoble<element> *aux=l2.primero;    
     while(aux){
         this->insertar(aux->getData(), this->n+1);
         aux=aux->getNext();
@@ -585,7 +585,7 @@ void listaDoble<element>::concatenar(const listaDoble<element> &l2){
 }
 
 template<class element>
-void listaDoble<element>::hacerCircular(){
+void ListaDoble<element>::hacerCircular(){
     if(this->n >0){
         this->ultimo->setNext(this->primero);
         this->primero->setPrevious(this->ultimo);
@@ -593,7 +593,7 @@ void listaDoble<element>::hacerCircular(){
 }
 
 template<class element>
-void listaDoble<element>::deshacerCircular(){
+void ListaDoble<element>::deshacerCircular(){
     if(this->n >0){
         this->ultimo->setNext(NULL);
         this->primero->setPrevious(NULL);
@@ -601,10 +601,10 @@ void listaDoble<element>::deshacerCircular(){
 }
 
 template<class element>
-listaDoble<element>& listaDoble<element>::operator=(const listaDoble<element> &l){
+ListaDoble<element>& ListaDoble<element>::operator=(const ListaDoble<element> &l){
     if(this!=&l){
         this->vaciar();
-        nodoDoble<element> *aux=l.primero;
+        NodoDoble<element> *aux=l.primero;
         for(int i=1; i<=l.n; i++){
             this->insertar(aux->getData(), this->n+1);
             aux=aux->getNext();

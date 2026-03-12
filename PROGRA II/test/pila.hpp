@@ -1,69 +1,69 @@
-#ifndef PILA_H
-#define PILA_H
+#ifndef Pila_H
+#define Pila_H
 
 #include<iostream>
 
-//Clase nodop
+//Clase NodoP
 template<class element>
-class nodop{
+class NodoP{
     private:
         element data;
-        nodop<element> *next;
+        NodoP<element> *next;
 
     public:
 
-    nodop(element data): data(data), next(NULL){}
+    NodoP(element data): data(data), next(NULL){}
 
     element getData() const;
 
     void setData(element d);
 
-    void setNext(nodop<element>* n);
+    void setNext(NodoP<element>* n);
 
-    nodop<element>* getNext() const;
+    NodoP<element>* getNext() const;
 
-    ~nodop(){}
+    ~NodoP(){}
 
 };
 
 template<class element>
-element nodop<element>::getData() const{
+element NodoP<element>::getData() const{
     return this->data;
 }
 
 template<class element>
-void nodop<element>::setData(element d){
+void NodoP<element>::setData(element d){
     this->data=d;
 }
 
 template<class element>
-void nodop<element>::setNext(nodop<element>* n){
+void NodoP<element>::setNext(NodoP<element>* n){
     this->next=n;
 }
 
 template<class element>
-nodop<element>* nodop<element>::getNext() const{
+NodoP<element>* NodoP<element>::getNext() const{
     return this->next;
 }
 
 //Clase Pila
 
 template<class element>
-class pila{
+class Pila{
     private:
-        nodop<element> *tope;
+        NodoP<element> *tope;
         int n;
 
     public:
 
-    pila(): tope(NULL), n(0){}
+    Pila(): tope(NULL), n(0){}
 
-    ///Constructor copia clase pila
-    pila(const pila<element> &p);
+    ///Constructor copia clase Pila
+    Pila(const Pila<element> &p);
     
-    void apilar(element e);
+    void aPilar(element e);
 
-    void desapilar();
+    void desaPilar();
 
     bool esVacia() const;
 
@@ -75,28 +75,28 @@ class pila{
     
     void vaciar();
 
-    pila<element>& operator=(const pila<element> &p);
+    Pila<element>& operator=(const Pila<element> &p);
 
-    ~pila(){
+    ~Pila(){
         this->vaciar();
     }
 };
 
 template<class element>
-pila<element>& pila<element>::operator=(const pila<element> &p){
+Pila<element>& Pila<element>::operator=(const Pila<element> &p){
     if(this!=&p){
         this->vaciar();
 
         if(!p.esVacia()){
-            nodop<element> *aux, *nuevo;
+            NodoP<element> *aux, *nuevo;
 
             aux=p.tope;
-            nuevo=new nodop<element>(aux->getData());
+            nuevo=new NodoP<element>(aux->getData());
             this->tope=nuevo;
             aux=aux->getNext();
         
             while (aux){
-                nuevo->setNext(new nodop<element>(aux->getData()));
+                nuevo->setNext(new NodoP<element>(aux->getData()));
                 nuevo=nuevo->getNext();
                 aux=aux->getNext();
             }
@@ -111,17 +111,17 @@ pila<element>& pila<element>::operator=(const pila<element> &p){
 };
 
 template<class element>
-pila<element>::pila(const pila<element> &p){
+Pila<element>::Pila(const Pila<element> &p){
     if(!p.esVacia()){
-        nodop<element> *aux, *nuevo;
+        NodoP<element> *aux, *nuevo;
 
         aux=p.tope;
-        nuevo=new nodop<element>(aux->getData());
+        nuevo=new NodoP<element>(aux->getData());
         this->tope=nuevo;
         aux=aux->getNext();
         
         while (aux){
-            nuevo->setNext(new nodop<element>(aux->getData()));
+            nuevo->setNext(new NodoP<element>(aux->getData()));
             nuevo=nuevo->getNext();
             aux=aux->getNext();
         }
@@ -133,8 +133,8 @@ pila<element>::pila(const pila<element> &p){
 }
 
 template<class element>
-void pila<element>::apilar(element e){
-    nodop<element> *nuevo= new nodop<element>(e);
+void Pila<element>::aPilar(element e){
+    NodoP<element> *nuevo= new NodoP<element>(e);
 
     nuevo->setNext(this->tope);
     this->tope=nuevo;
@@ -142,8 +142,8 @@ void pila<element>::apilar(element e){
 }
 
 template<class element>
-void pila<element>::desapilar(){
-    nodop<element> *aux;
+void Pila<element>::desaPilar(){
+    NodoP<element> *aux;
 
     aux=this->tope;
 
@@ -158,7 +158,7 @@ void pila<element>::desapilar(){
 }
 
 template<class element>
-bool pila<element>::esVacia() const{
+bool Pila<element>::esVacia() const{
     if(this->n > 0){
         return false;
     }else{
@@ -167,21 +167,21 @@ bool pila<element>::esVacia() const{
 }
 
 template<class element>
-int pila<element>::getN() const{
+int Pila<element>::getN() const{
     return this->n;
 }
 
 template<class element>
-element pila<element>::getTope() const{
+element Pila<element>::getTope() const{
     return this->tope->getData();
 }
 
 template<class element>
-void pila<element>::vaciar(){
-    nodop<element> *aux=this->tope;
+void Pila<element>::vaciar(){
+    NodoP<element> *aux=this->tope;
     
     while(aux){
-        nodop<element> *aux2=aux;
+        NodoP<element> *aux2=aux;
         aux=aux->getNext();
         
         delete aux2;
