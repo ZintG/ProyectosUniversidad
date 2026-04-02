@@ -11,7 +11,7 @@ class Disco{
     private:
         string diskName;
         int diskSize;
-        static int numberOfExistingDisk;
+        static int numberOfExistingDisks;
         vector<unsigned char> data;
     public:
         ///@brief Constructor de la clase Disco.
@@ -33,20 +33,17 @@ class Disco{
 
         /// @brief Obtener numeros de discos existentes
         /// @return Numero de discos existentes, int 
-        int getNumberOfDisk() const;
-
-        /// @brief Inicializar contador de discos estatico
-        void startDiskCounter();
+        static int getNumberOfDisks();
 
         /// @brief Eliminar la data del Disco(archivo)
         void borrarData();
 
         /// @brief Destructor (No borra el archivo)
-        ~Disco();
+        ~Disco(){}
 };
 
 Disco::Disco(string name, int size): diskName(name), diskSize(size){
-    this->numberOfExistingDisk++;
+    this->numberOfExistingDisks++;
 
     //Abrir archivo en modo lectura
     ifstream disk(this->diskName, ios::binary);
@@ -90,5 +87,25 @@ void Disco::writeData(const vector<unsigned char> &newData){
     }
 }
 
+int Disco::getDiskSize() const{
+    return this->diskSize;
+}
+
+int Disco::getNumberOfDisks(){
+    return Disco::numberOfExistingDisks;
+}
+
+void Disco::borrarData(){
+    ofstream eraseDiskData(this->diskName, ios::binary | ios::trunc);
+    if(!eraseDiskData.is_open()){
+        cerr<<"Error al truncar el archivo(abrir nuevo)"<<endl;
+    }else{
+        this->data.clear();
+        eraseDiskData.close();
+    }
+}
+
+//Inicializacion del estatico
+int Disco::numberOfExistingDisks=0;
 
 #endif
