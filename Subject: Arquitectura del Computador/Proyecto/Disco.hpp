@@ -13,6 +13,7 @@ class Disco{
         int diskSize;
         static int numberOfExistingDisks;
         vector<unsigned char> data;
+        bool status;
     public:
         ///@brief Constructor de la clase Disco.
         ///@param name Nombre del archivo. Si el archivo no existe lo crea
@@ -28,12 +29,16 @@ class Disco{
         void writeData(const vector<unsigned char> &newData);
 
         /// @brief Obtener capacidad del Disco en GB
-        /// @return Capcaidad del Disco en int
+        /// @return Capacidad del Disco en int
         int getDiskSize() const;
 
         /// @brief Obtener numeros de discos existentes
         /// @return Numero de discos existentes, int 
         static int getNumberOfDisks();
+
+        /// @brief Retorna el estado del disco
+        /// @return en caso de fallas retorna false y true en caso contrario
+        bool getStatus() const;
 
         /// @brief Eliminar la data del Disco(archivo)
         void borrarData();
@@ -42,7 +47,7 @@ class Disco{
         ~Disco(){}
 };
 
-Disco::Disco(string name, int size): diskName(name), diskSize(size){
+Disco::Disco(string name, int size): diskName(name), diskSize(size), status(true){
     this->numberOfExistingDisks++;
 
     //Abrir archivo en modo lectura
@@ -102,7 +107,12 @@ void Disco::borrarData(){
     }else{
         this->data.clear();
         eraseDiskData.close();
+        this->status=false;
     }
+}
+
+bool Disco::getStatus() const{
+    return this->status;
 }
 
 //Inicializacion del estatico
