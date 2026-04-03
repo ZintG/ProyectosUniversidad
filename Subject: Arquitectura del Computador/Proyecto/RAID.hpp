@@ -17,25 +17,40 @@ class RAID{
         int usableCapacity, totalCapacity;
 
     public:
-
+        /// @brief Constructor de clase abstracta RAID
+        /// @param num Numero de discos
+        /// @param size Capacidad de los discos en GB
         RAID(int num, int size);
 
+        /// @brief Metodo virtual para escribir informacion
+        /// @param info string que contiene la informacion a escribir
         virtual void writeInfo(const string &info)=0;
 
+        /// @brief Metodo Virtual para leer la informacion del arreglo
+        /// @return string con la informacion completa
         virtual string readInfo()=0;
 
+        /// @brief Metodo virtual para recuperar un disco caido.
+        /// @param diskNumber Numero del disco caido
         virtual void recoverDisk(int diskNumber)=0;
 
+        /// @brief Simular fallo de disco. Borra toda su informacion
+        /// @param diskNumber Numero del disco al que se le va a borrar la informacion
         void diskFailure(int diskNumber);
 
+        /// @brief Obtener capacidad real utilizable del arreglo
+        /// @return numero entero que representa la capacidad en GB
         int getUsableCapacity() const;
 
+        /// @brief Obtener capacidad total del arreglo
+        /// @return numero entero que representa la capacidad en GB
         int getTotalCapacity() const;
 
         virtual ~RAID(){}
 };
 
 //Implementacion metodos de RAID
+
 RAID::RAID(int num, int size):sizeOfDisks(size){
     for(int i=0; i<num; i++){
         char label[200];
@@ -66,15 +81,28 @@ int RAID::getUsableCapacity() const{
 
 class RAID5: public RAID{
     public:
+        /// @brief Constructor de arreglo RAID 5
+        /// @param num Numero de Discos
+        /// @param size Capacidad de los discos en GB (entero)
         RAID5(int num, int size);
 
+        /// @brief Escribir informacion en RAID 5
+        /// @param info string de informacion a escribir
         void writeInfo(const string &info);
 
+        /// @brief leer informacion de RAID 5
+        /// @return string con toda la informacion almacenada en el arreglo
         string readInfo();
 
+        /// @brief Verificar el estado de los discos
+        /// @return Numero del disco con fallo, si mas de dos discos fallan al mismo tiempo retorna -1 (fatal error)
         int verifyDisksStaus();
 
+        /// @brief Recuperar informacion de disco caido
+        /// @param diskNumber Numero del disco caido
         void recoverDisk(int diskNumber);
+
+        ~RAID5();
 };
 
 //Implementacion metodos de RAID5
