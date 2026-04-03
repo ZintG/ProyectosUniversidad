@@ -48,7 +48,7 @@ class Disco{
 };
 
 Disco::Disco(string name, int size): diskName(name), diskSize(size), status(true){
-    this->numberOfExistingDisks++;
+    Disco::numberOfExistingDisks++;
 
     //Abrir archivo en modo lectura
     ifstream disk(this->diskName, ios::binary);
