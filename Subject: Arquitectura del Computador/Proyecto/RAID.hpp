@@ -183,4 +183,30 @@ int RAID5::verifyDisksStaus(){
     }
 }
 
+void RAID5::recoverDisk(int diskNumber){
+    int numberOfRows;
+    if(diskNumber==0){
+        numberOfRows=this->disks[1].getData().size();
+    }else{
+        numberOfRows=this->disks[0].getData().size();
+    }
+
+    int numberOfDisks=this->disks.size();
+
+    vector<unsigned char> recoveredData;
+
+    for(int i=0; i<numberOfRows; i++){
+
+        unsigned char recoveredByte='\0';
+        for(int j=0; j<numberOfDisks; j++){
+            if(j!=diskNumber){
+                recoveredByte^=this->disks[j].getData()[i];
+            }
+        }
+
+        recoveredData.push_back(recoveredByte);
+    }
+    this->disks[diskNumber].writeData(recoveredData);
+}
+
 #endif
