@@ -95,7 +95,7 @@ class RAID5: public RAID{
         string readInfo();
 
         /// @brief Verificar el estado de los discos
-        /// @return Numero del disco con fallo, si mas de dos discos fallan al mismo tiempo retorna -1 (fatal error)
+        /// @return Numero del disco con fallo, si mas de dos discos fallan al mismo tiempo retorna -1 (fatal error), si no encuentra fallas retorna -2
         int verifyDisksStaus();
 
         /// @brief Recuperar informacion de disco caido
@@ -205,9 +205,11 @@ int RAID5::verifyDisksStaus(){
     //si hay mas de un disco fallado retorna -1 (error fatal)
     if(errorDisk.size()>1){
         return -1;
-    }else{
+    }else if(errorDisk.size()>0){
         //retorna el indice del disco fallado
         return errorDisk[0];
+    }else{
+        return -2;
     }
 }
 
