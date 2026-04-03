@@ -67,6 +67,12 @@ int RAID::getUsableCapacity() const{
 class RAID5: public RAID{
     public:
         RAID5(int num, int size);
+
+        void writeInfo(const string &info);
+
+        string readInfo() override;
+
+        void recoverDisk(int diskNumber);
 };
 
 //Implementacion metodos de RAID5
@@ -76,5 +82,8 @@ RAID5::RAID5(int num, int size): RAID(num, size){
     this->usableCapacity=(num*size)-size;
 }
 
+void RAID5::writeInfo(const string &info){
+    
+}
 
 #endif
