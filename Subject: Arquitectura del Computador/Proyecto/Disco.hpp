@@ -80,7 +80,7 @@ void Disco::writeData(const vector<unsigned char> &newData){
     //Cargar datos modificados en el objeto
     this->data=newData;
 
-    ofstream disk(this->diskName, ios::binary);
+    ofstream disk(this->diskName, ios::binary| ios::trunc);
 
     if(disk.is_open()){
         //Escribir en el archivo
