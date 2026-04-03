@@ -70,7 +70,7 @@ class RAID5: public RAID{
 
         void writeInfo(const string &info);
 
-        string readInfo() override;
+        string readInfo();
 
         void recoverDisk(int diskNumber);
 };
@@ -131,6 +131,32 @@ void RAID5::writeInfo(const string &info){
             this->disks[k].writeData(diskData);
         }
     }
+}
+
+string RAID5::readInfo(){
+    //Obtener numero de filas y numero de discos
+    int numberOfRows=this->disks[0].getData().size();
+    int numberOfDisks=this->disks.size();
+    //string de salida
+    string exitData;
+
+    //recorrer cada fila
+    for(int i=0; i<numberOfRows; i++){
+        //calcular disco de paridad
+        int parityDisk= i % numberOfDisks;
+        //recorrer cada disco
+        for(int j=0; j<numberOfDisks; j++){
+            //si no es el diso de paridad de la fila guarda el caracter
+            if(j!=parityDisk){
+                //verificar si el caracter no es relleno ('\0)
+                if(this->disks[j].getData()[i] != '\0'){
+                    exitData+= this->disks[j].getData()[i];
+                }
+            }
+        }
+    }
+
+    return exitData;
 }
 
 #endif
