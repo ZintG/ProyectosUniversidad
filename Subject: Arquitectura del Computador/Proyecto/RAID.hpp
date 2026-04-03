@@ -18,7 +18,7 @@ class RAID{
 
     public:
 
-        RAID(int diskNum, int diskSize);
+        RAID(int num, int size);
 
         virtual void writeInfo(const string &info)=0;
 
