@@ -41,7 +41,7 @@ class Disco{
         bool getStatus() const;
 
         /// @brief Eliminar la data del Disco(archivo)
-        void borrarData();
+        void eraseData();
 
         /// @brief Destructor (No borra el archivo)
         ~Disco(){}
@@ -100,7 +100,7 @@ int Disco::getNumberOfDisks(){
     return Disco::numberOfExistingDisks;
 }
 
-void Disco::borrarData(){
+void Disco::eraseData(){
     ofstream eraseDiskData(this->diskName, ios::binary | ios::trunc);
     if(!eraseDiskData.is_open()){
         cerr<<"Error al truncar el archivo(abrir nuevo)"<<endl;
