@@ -51,7 +51,7 @@ RAID::RAID(int num, int size):sizeOfDisks(size){
 }
 
 void RAID::diskFailure(int diskNumber){
-    disks[diskNumber].borrarData();
+    disks[diskNumber].eraseData();
 }
 
 int RAID::getTotalCapacity() const{
@@ -71,6 +71,8 @@ class RAID5: public RAID{
         void writeInfo(const string &info);
 
         string readInfo();
+
+        int verifyDisksStaus();
 
         void recoverDisk(int diskNumber);
 };
@@ -157,6 +159,28 @@ string RAID5::readInfo(){
     }
 
     return exitData;
+}
+
+int RAID5::verifyDisksStaus(){
+    //Obtener numero de Discos
+    int numberOfDisks=this->disks.size();
+    //Vector para guardar el indice del disco fallado y verificar si hay mas de un fallo
+    vector<int> errorDisk;
+
+    //recorrer discos y verificar estado
+    for(int i=0; i<numberOfDisks; i++){
+        if(!this->disks[i].getStatus()){
+            errorDisk.push_back(i);
+        }
+    }
+
+    //si hay mas de un disco fallado retorna -1 (error fatal)
+    if(errorDisk.size()>1){
+        return -1;
+    }else{
+        //retorna el indice del disco fallado
+        return errorDisk[0];
+    }
 }
 
 #endif
