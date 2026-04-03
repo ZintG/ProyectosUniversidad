@@ -40,6 +40,9 @@ class Disco{
         /// @return en caso de fallas retorna false y true en caso contrario
         bool getStatus() const;
 
+        /// @brief Cambia el valor del atributo booleano status
+        void changeStatus();
+
         /// @brief Eliminar la data del Disco(archivo)
         void eraseData();
 
@@ -113,6 +116,10 @@ void Disco::eraseData(){
 
 bool Disco::getStatus() const{
     return this->status;
+}
+
+void Disco::changeStatus(){
+    this->status=!this->status;
 }
 
 //Inicializacion del estatico

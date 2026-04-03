@@ -184,29 +184,36 @@ int RAID5::verifyDisksStaus(){
 }
 
 void RAID5::recoverDisk(int diskNumber){
+    //Obtener numero de filas
     int numberOfRows;
     if(diskNumber==0){
         numberOfRows=this->disks[1].getData().size();
     }else{
         numberOfRows=this->disks[0].getData().size();
     }
-
+    //Obtener numero de discos
     int numberOfDisks=this->disks.size();
 
+    //Vector de informacion reconstruida
     vector<unsigned char> recoveredData;
 
+    //recorrer fila por fila
     for(int i=0; i<numberOfRows; i++){
 
         unsigned char recoveredByte='\0';
+        //Recorrer la fila en los discos funcionales y recuperar el byte perdido
         for(int j=0; j<numberOfDisks; j++){
             if(j!=diskNumber){
                 recoveredByte^=this->disks[j].getData()[i];
             }
         }
-
+        //Guardar byte restaurado en el vector
         recoveredData.push_back(recoveredByte);
     }
+    //Escribir data recuperada en el disco
     this->disks[diskNumber].writeData(recoveredData);
+    //Cambiar status a true
+    this->disks[diskNumber].changeStatus();
 }
 
 #endif
