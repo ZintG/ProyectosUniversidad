@@ -4,7 +4,6 @@
 #include<iostream>
 #include<vector>
 #include<string>
-#include<cstdio>
 #include"Disco.hpp"
 #include"RAID.hpp"
 
