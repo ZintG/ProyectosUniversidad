@@ -99,6 +99,7 @@ void RAID1::recoverDisk(int diskNumber){
     }
     //recuperar data en el disco caido
     this->disks[diskNumber].writeData(recoveredData);
+    this->disks[diskNumber].changeStatus();
 }
 
 #endif
