@@ -14,7 +14,7 @@ class RAID5: public RAID{
     public:
         /// @brief Constructor de arreglo RAID 5
         /// @param num Numero de Discos
-        /// @param size Capacidad de los discos en GB (entero)
+        /// @param size Capacidad de los discos(entero)
         RAID5(int num, int size);
 
         /// @brief Escribir informacion en RAID 5
@@ -33,7 +33,7 @@ class RAID5: public RAID{
         /// @param diskNumber Numero del disco caido
         void recoverDisk(int diskNumber);
 
-        ~RAID5();
+        ~RAID5(){}
 };
 
 //Implementacion metodos de RAID5

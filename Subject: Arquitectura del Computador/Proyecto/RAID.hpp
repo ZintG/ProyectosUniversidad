@@ -19,7 +19,7 @@ class RAID{
     public:
         /// @brief Constructor de clase abstracta RAID
         /// @param num Numero de discos
-        /// @param size Capacidad de los discos en GB
+        /// @param size Capacidad de los discos
         RAID(int num, int size);
 
         /// @brief Metodo virtual para escribir informacion
@@ -39,11 +39,11 @@ class RAID{
         void diskFailure(int diskNumber);
 
         /// @brief Obtener capacidad real utilizable del arreglo
-        /// @return numero entero que representa la capacidad en GB
+        /// @return numero entero que representa la capacidad
         int getUsableCapacity() const;
 
         /// @brief Obtener capacidad total del arreglo
-        /// @return numero entero que representa la capacidad en GB
+        /// @return numero entero que representa la capacidad
         int getTotalCapacity() const;
 
         virtual ~RAID(){}
