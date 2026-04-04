@@ -26,8 +26,8 @@ class RAID5: public RAID{
         string readInfo();
 
         /// @brief Verificar el estado de los discos
-        /// @return Numero del disco con fallo, si mas de dos discos fallan al mismo tiempo retorna -1 (fatal error), si no encuentra fallas retorna -2
-        int verifyDisksStatus();
+        /// @return Retorna un vector con el indice de los discos caidos.
+        vector<int> verifyDisksStatus();
 
         /// @brief Recuperar informacion de disco caido
         /// @param diskNumber Numero del disco caido
@@ -121,31 +121,28 @@ string RAID5::readInfo(){
     return exitData;
 }
 
-int RAID5::verifyDisksStatus(){
-    //Obtener numero de Discos
+vector<int> RAID5::verifyDisksStatus(){
+    //obtener numero de discos
     int numberOfDisks=this->disks.size();
-    //Vector para guardar el indice del disco fallado y verificar si hay mas de un fallo
-    vector<int> errorDisk;
 
-    //recorrer discos y verificar estado
+    //vector de salida
+    vector<int> errorDisks;
+
+    //verificar el estado de cada disco
     for(int i=0; i<numberOfDisks; i++){
         if(!this->disks[i].getStatus()){
-            errorDisk.push_back(i);
+            errorDisks.push_back(i);
         }
     }
 
-    //si hay mas de un disco fallado retorna -1 (error fatal)
-    if(errorDisk.size()>1){
-        return -1;
-    }else if(errorDisk.size()>0){
-        //retorna el indice del disco fallado
-        return errorDisk[0];
-    }else{
-        return -2;
-    }
+    return errorDisks;
 }
 
 void RAID5::recoverDisk(int diskNumber){
+    if(this->verifyDisksStatus().size()>1){
+        cerr<<"[RAID5] Mas de un disco presenta fallas. Imposible recuperar. FATAL ERROR"<<endl;
+        return;
+    }
     //Obtener numero de filas
     int numberOfRows;
     if(diskNumber==0){

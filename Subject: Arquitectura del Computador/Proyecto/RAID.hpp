@@ -34,6 +34,10 @@ class RAID{
         /// @param diskNumber Numero del disco caido
         virtual void recoverDisk(int diskNumber)=0;
 
+        /// @brief Metodo Virtual para verificar el estado de los discos
+        /// @return Retorna un vector con el indice de los discos caidos.
+        virtual vector<int> verifyDisksStatus()=0;
+
         /// @brief Simular fallo de disco. Borra toda su informacion
         /// @param diskNumber Numero del disco al que se le va a borrar la informacion
         void diskFailure(int diskNumber);
