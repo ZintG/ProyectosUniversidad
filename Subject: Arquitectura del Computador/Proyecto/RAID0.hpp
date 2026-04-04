@@ -31,7 +31,7 @@ class RAID0: public RAID{
 
         /// @brief Verificar el estado de los discos
         /// @return Retorna un vector con el indice de los discos caidos.
-        vector<int> verifyDisksStaus();
+        vector<int> verifyDisksStatus();
 
         ~RAID0(){}
 };
@@ -90,7 +90,7 @@ string RAID0::readInfo(){
     return exitData;
 }
 
-vector<int> RAID0::verifyDisksStaus(){
+vector<int> RAID0::verifyDisksStatus(){
     //obtener numero de discos
     int numberOfDisks=this->disks.size();
 
