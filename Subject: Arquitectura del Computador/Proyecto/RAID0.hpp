@@ -11,7 +11,7 @@ using namespace std;
 
 class RAID0: public RAID{
     private:
-        void recoverDisk(int diskNumber){
+        void recoverDisk(int /*diskNumber*/){
             cerr<<"ERROR: La recuperacion de informacion en RAID 0 no es posible"<<endl;
         }
     public:
@@ -45,7 +45,7 @@ void RAID0::writeInfo(const string &info){
     int numberOfDisks=this->disks.size();
 
     //recorrer info
-    int stringIndex=0;
+    size_t stringIndex=0;
     while(stringIndex<info.size()){
 
         //Extraer el segmento de bytes de la fila, si faltan bytes rellena con '\0'

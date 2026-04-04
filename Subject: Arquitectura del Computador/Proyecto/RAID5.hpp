@@ -47,13 +47,13 @@ void RAID5::writeInfo(const string &info){
     int segmentsNumber=this->disks.size()-1;
 
     //Recorrer Info
-    int stringIndex=0;
+    size_t stringIndex=0;
     while(stringIndex<info.size()){
         //Obtener fila actual
         int currentRow=this->disks[0].getData().size();
 
         //Calcular en que disco va la paridad en la fila actual
-        int parityDisk=currentRow % this->disks.size();
+        size_t parityDisk=currentRow % this->disks.size();
 
         //Vector para almacenar los bytes a guardar en la fila
         vector<unsigned char> currentBytes;
@@ -72,14 +72,14 @@ void RAID5::writeInfo(const string &info){
 
         //Calculo de paridad de la fila actual
         unsigned char parity='\0';
-        for(int j=0; j<currentBytes.size(); j++){
+        for(size_t j=0; j<currentBytes.size(); j++){
             parity^=currentBytes[j];
         }
 
         /*Insercion en discos, guarda los bytes en orden y el bytes de paridad en el
         disco correspondiente en la fila*/
         int insertionIndex=0;
-        for(int k=0; k<this->disks.size(); k++){
+        for(size_t k=0; k<this->disks.size(); k++){
             vector<unsigned char> diskData=this->disks[k].getData();
             if(k==parityDisk){
                 diskData.push_back(parity);

@@ -54,7 +54,7 @@ Disco::Disco(string name, int size): diskName(name), diskSize(size), status(true
     Disco::numberOfExistingDisks++;
 
     //Abrir archivo en modo lectura
-    ifstream disk(this->diskName, ios::binary);
+    ifstream disk(this->diskName.c_str(), ios::binary);
     //verificar que existe y se abrio correctamente
     if(disk.is_open()){
         //cargar informacion del archivo en el vector data
@@ -65,7 +65,7 @@ Disco::Disco(string name, int size): diskName(name), diskSize(size), status(true
         disk.close();
     }else{
         //Si el archivo no se abrio o no existe se crea
-        ofstream newDisk(this->diskName, ios::binary);
+        ofstream newDisk(this->diskName.c_str(), ios::binary);
         //verificacion de apertura/creacion correcta
         if(!newDisk.is_open()){
             cerr<<"Error al abrir/crear archivo"<<endl;
@@ -83,7 +83,7 @@ void Disco::writeData(const vector<unsigned char> &newData){
     //Cargar datos modificados en el objeto
     this->data=newData;
 
-    ofstream disk(this->diskName, ios::binary| ios::trunc);
+    ofstream disk(this->diskName.c_str(), ios::binary| ios::trunc);
 
     if(disk.is_open()){
         //Escribir en el archivo
@@ -104,7 +104,7 @@ int Disco::getNumberOfDisks(){
 }
 
 void Disco::eraseData(){
-    ofstream eraseDiskData(this->diskName, ios::binary | ios::trunc);
+    ofstream eraseDiskData(this->diskName.c_str(), ios::binary | ios::trunc);
     if(!eraseDiskData.is_open()){
         cerr<<"Error al truncar el archivo(abrir nuevo)"<<endl;
     }else{

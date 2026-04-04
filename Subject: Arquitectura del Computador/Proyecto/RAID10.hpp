@@ -49,7 +49,7 @@ void RAID10::writeInfo(const string &info){
     int numberOfDisks=this->disks.size();
 
     //Recorrer info
-    int stringIndex=0;
+    size_t stringIndex=0;
     while(stringIndex<info.size()){
 
         //Extraer los bytes de la fila

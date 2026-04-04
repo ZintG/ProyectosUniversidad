@@ -46,11 +46,11 @@ void RAID1::writeInfo(const string &info){
     //Obtener data de los discos para escribir
     vector<unsigned char> diskData = this->disks[0].getData();
     //Insertar info en data
-    for(int i=0; i<info.size(); i++){
+    for(size_t i=0; i<info.size(); i++){
         diskData.push_back(info[i]);
     }
     //Escribir data en todos los discos
-    for(int j=0; j<this->disks.size(); j++){
+    for(size_t j=0; j<this->disks.size(); j++){
         this->disks[j].writeData(diskData);
     }
 }
@@ -61,7 +61,7 @@ string RAID1::readInfo(){
     //Obtener data de los discos
     vector<unsigned char> diskData = this->disks[0].getData();
     //recorrer data
-    for(int i=0; i<diskData.size(); i++){
+    for(size_t i=0; i<diskData.size(); i++){
         exitData+=diskData[i];
     }
     return exitData;
@@ -87,7 +87,7 @@ vector<int> RAID1::verifyDisksStatus(){
 void RAID1::recoverDisk(int diskNumber){
     vector<unsigned char> recoveredData;
     bool aux=true;
-    int i=0;
+    size_t i=0;
     //obtener data desde un disco sano
     while(aux && i<this->disks.size()){
         if(this->disks[i].getStatus()){
