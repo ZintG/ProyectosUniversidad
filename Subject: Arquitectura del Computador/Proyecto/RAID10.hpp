@@ -44,25 +44,31 @@ RAID10::RAID10(int num, int size): RAID(num, size){
 }
 
 void RAID10::writeInfo(const string &info){
+    //Obtener en cuantos bytes se separa infor por fila
     int segmentsNumber=this->disks.size()/2;
+    //Obtener numero de discos
     int numberOfDisks=this->disks.size();
 
+    //Recorrer info
     int stringIndex=0;
-
     while(stringIndex<info.size()){
 
+        //Extraer los bytes de la fila
         vector<unsigned char> currentBytes;
         for(int i=0; i<segmentsNumber; i++){
             if(stringIndex<info.size()){
                 currentBytes.push_back(info[stringIndex]);
                 stringIndex++;
             }else{
+                //Si hacen falta bytes para terminar la fila rellena con '\0'
                 currentBytes.push_back('\0');
             }
         }
 
+        //Insercion en los discos
         int insertionIndex=0;
         for(int j=0; j<numberOfDisks; j+=2){
+            //se incerta en los discos pares y se copia en los impares
             vector<unsigned char> diskData=this->disks[j].getData();
 
             diskData.push_back(currentBytes[insertionIndex]);
@@ -78,13 +84,18 @@ string RAID10::readInfo(){
     //string de salida
     string exitData;
 
+    //Obtener numero de discos y filas 
     int numberOfDisks=this->disks.size();
     int numberOfRows=this->disks[0].getData().size();
 
+    //recorrer filas
     for(int i=0; i<numberOfRows; i++){
+        //recorrer solo los discos pares
         for(int j=0; j<numberOfDisks; j+=2){
+            //extraer caracter de los discos y guardarlo en el string
             unsigned char c= this->disks[j].getData()[i];
             if(c != '\0'){
+                //si el caracter es nulo lo ignora
                 exitData+= c;
             }
         }
@@ -111,16 +122,22 @@ vector<int> RAID10::verifyDisksStatus(){
 }
 
 void RAID10::recoverDisk(int diskNumber){
+    /*Obtener indice del disco que se usara para recuperar
+    Si el disco caido es par se recupera desde el siguiente impar
+    Si el disco caido es impar se recupera desde el anterior par*/
     int recoveryIndex;
     if(diskNumber%2 == 0){
         recoveryIndex=diskNumber+1;
     }else{
         recoveryIndex=diskNumber-1;
     }
+    //Se verifica que el disco del que se recuperar la informacion este funcionando
     if(this->disks[recoveryIndex].getStatus()){
+        //Recuperar el disco caido y cambiar status a true
         this->disks[diskNumber].writeData(this->disks[recoveryIndex].getData());
         this->disks[diskNumber].changeStatus();
     }else{
+        //Si la pareja del disco caido tambien presenta fallos no se puede recuperar.
         cerr<<"[RAID10] Error al recuperar discos, el disco "<<diskNumber<<" y su pareja estan caidos."<<endl;
     }
 }
