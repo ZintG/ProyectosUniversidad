@@ -109,9 +109,10 @@ string RAID5::readInfo(){
         for(int j=0; j<numberOfDisks; j++){
             //si no es el diso de paridad de la fila guarda el caracter
             if(j!=parityDisk){
+                unsigned char c= this->disks[j].getData()[i];
                 //verificar si el caracter no es relleno ('\0)
-                if(this->disks[j].getData()[i] != '\0'){
-                    exitData+= this->disks[j].getData()[i];
+                if(c != '\0'){
+                    exitData+= c;
                 }
             }
         }

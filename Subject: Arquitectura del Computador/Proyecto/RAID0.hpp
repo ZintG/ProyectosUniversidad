@@ -80,9 +80,10 @@ string RAID0::readInfo(){
     for(int i=0; i<numberOfRows; i++){
         //recorrer cada disco
         for(int j=0; j<numberOfDisks; j++){
+            unsigned char c=this->disks[j].getData()[i];
             //verificar si el caracter no es relleno ('\0)
-            if(this->disks[j].getData()[i] != '\0'){
-                exitData+= this->disks[j].getData()[i];
+            if(c != '\0'){
+                exitData+= c;
             }
         }
     }
