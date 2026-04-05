@@ -19,7 +19,7 @@ int main(){
     ifstream logoIn("logo.in");
     string logo;
     while(getline(logoIn, logo)){
-        cout<<logo<<'\n';
+        cout<<logo<<endl;
     }
     logoIn.close();
 
