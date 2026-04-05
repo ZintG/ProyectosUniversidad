@@ -4,6 +4,7 @@
 #include<iostream>
 #include<vector>
 #include<string>
+#include<cstdlib>
 #include"Disco.hpp"
 #include"RAID.hpp"
 
@@ -140,6 +141,7 @@ vector<int> RAID5::verifyDisksStatus(){
 void RAID5::recoverDisk(int diskNumber){
     if(this->verifyDisksStatus().size()>1){
         cerr<<"[RAID5] Mas de un disco presenta fallas. Imposible recuperar. FATAL ERROR"<<endl;
+        exit(1);
         return;
     }
     //Obtener numero de filas

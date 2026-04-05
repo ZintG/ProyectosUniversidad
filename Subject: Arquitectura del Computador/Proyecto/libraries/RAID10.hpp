@@ -137,7 +137,8 @@ void RAID10::recoverDisk(int diskNumber){
         this->disks[diskNumber].changeStatus();
     }else{
         //Si la pareja del disco caido tambien presenta fallos no se puede recuperar.
-        cerr<<"[RAID10] Error al recuperar discos, el disco "<<diskNumber<<" y su pareja estan caidos."<<endl;
+        cerr<<"[RAID10] Error al recuperar discos, el disco "<<diskNumber<<" y su pareja estan caidos. FATAL ERROR"<<endl;
+        exit(1);
     }
 }
 

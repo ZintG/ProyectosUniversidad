@@ -5,6 +5,7 @@
 #include<vector>
 #include<string>
 #include<cstdio>
+#include<cstdlib>
 #include"Disco.hpp"
 
 using namespace std;
@@ -56,10 +57,16 @@ class RAID{
 //Implementacion metodos de RAID
 
 RAID::RAID(int num, int size):sizeOfDisks(size){
+    #ifdef _WIN32
+        system("rmdir /s /q DiskData 2>nul & mkdir DiskData");
+    #else
+        system("rm -rf DiskData 2>/dev/null; mkdir -p DiskData");
+    #endif
+
     for(int i=0; i<num; i++){
         char label[200];
 
-        sprintf(label, "disk%d.bin", i);
+        sprintf(label, "DiskData/disk%d.bin", i);
 
         string diskLabel=label;
 

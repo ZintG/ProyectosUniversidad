@@ -4,6 +4,7 @@
 #include<iostream>
 #include<vector>
 #include<string>
+#include<cstdlib>
 #include"Disco.hpp"
 #include"RAID.hpp"
 
@@ -12,7 +13,9 @@ using namespace std;
 class RAID0: public RAID{
     private:
         void recoverDisk(int /*diskNumber*/){
-            cerr<<"ERROR: La recuperacion de informacion en RAID 0 no es posible"<<endl;
+            cerr<<"[RAID 0]ERROR: La recuperacion de informacion no es posible. FATAL ERROR"<<endl;
+            exit(1);
+            return;
         }
     public:
         /// @brief Constructor de arreglo RAID 0
