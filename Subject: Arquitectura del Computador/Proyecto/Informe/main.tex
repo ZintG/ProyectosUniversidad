@@ -1,0 +1,183 @@
+\documentclass[12pt, a4paper]{article}
+
+% Paquetes esenciales para español y formato
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{geometry}
+\geometry{a4paper, margin=2.5cm}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{float}
+
+\begin{document}
+
+% --- PORTADA ---
+\begin{titlepage}
+    \centering
+    \vspace*{2cm}
+    
+    {\Large \textbf{Universidad de Carabobo}}\\[0.5cm]
+    {\large Facultad Experimental de Ciencias y Tecnología (FACYT)}\\[0.5cm]
+    {\large Arquitectura del Computador 2-2025}\\[3cm]
+    
+    {\Huge \textbf{Simulador de Arreglos RAID}}\\[0.5cm]
+    {\large \textbf{Análisis de Rendimiento, Tolerancia a Fallos y Reconstrucción de Datos}}\\[3cm]
+    
+    \textbf{Autores:}\\[0.2cm]
+    Gabriel Becerra - 31.654.253 \\
+    Simón Tovar - 31.678.578 \\[2cm]
+    
+    \vfill
+    {\large \today}
+\end{titlepage}
+
+\newpage
+\tableofcontents
+\newpage
+
+% --- 1. EL PROBLEMA ---
+\section{El Problema}
+
+En la Arquitectura del Computador, el almacenamiento masivo representa un cuello de botella crítico para el rendimiento y la seguridad. Los discos físicos individuales tienen límites de transferencia y están sujetos a fallos ineludibles, lo cual resulta catastrófico en entornos de alta exigencia, como las estaciones de trabajo STEM enfocadas en cargas algorítmicas pesadas.
+
+Para mitigar estas vulnerabilidades se emplea la arquitectura RAID (\textit{Redundant Array of Independent Disks}), la cual agrupa múltiples discos para optimizar de forma equilibrada el rendimiento, la capacidad útil y la tolerancia a fallos. Sin embargo, el estudio y análisis de estas tecnologías suele verse limitado por la necesidad de adquirir controladoras y hardware especializado de alto costo.
+
+Por ello, \textbf{el problema central de este proyecto es desarrollar una simulación computacional por software de una controladora RAID}, emulando a bajo nivel el comportamiento físico de los arreglos 0, 1, 5 y 10. 
+
+El mayor desafío de esta implementación radica en abstraer el hardware utilizando la Programación Orientada a Objetos (POO), modelando discos virtuales que interactúen con el sistema de archivos mediante persistencia binaria. Resolver este problema exige superar los siguientes obstáculos lógicos y arquitectónicos:
+
+\begin{itemize}
+    \item \textbf{Emulación de Hardware:} Traducir las características físicas de un disco (estado, capacidad, operaciones de I/O) a estructuras de datos eficientes en memoria.
+    \item \textbf{Gestión de Datos a Bajo Nivel:} La distribución y el fraccionamiento de la información (\textit{striping}) no puede tratarse como cadenas de texto simples, sino que exige una manipulación estricta a nivel de bytes puros (como el uso de \texttt{unsigned char}).
+    \item \textbf{Simulación de Fallos Críticos:} Emular de forma realista la degradación del arreglo y la pérdida irrecuperable de un disco físico sin comprometer la ejecución del simulador principal.
+    \item \textbf{Reconstrucción Algorítmica (El desafío del RAID 5):} El diseño y la optimización del algoritmo de cálculo de paridad distribuida. Esto requiere aplicar operadores lógicos exclusivos a nivel de bits (XOR) para generar información redundante al escribir, y para despejar matemáticamente los bytes originales con el fin de reconstruir la información exacta de un disco caído en escenarios de recuperación.
+\end{itemize}
+
+Por lo tanto, la resolución de este problema no se limita al desarrollo de un programa tradicional, sino que requiere la construcción de una arquitectura de software robusta que refleje fielmente cómo el procesador y los controladores de memoria garantizan la persistencia, integridad y disponibilidad de los datos a nivel de hardware.
+
+% --- 2. TÉCNICAS COMPUTACIONALES ---
+\section{Técnicas Computacionales para su Solución}
+
+Para emular fielmente el comportamiento del hardware de las controladoras RAID, el simulador se desarrolló bajo el paradigma de la Programación Orientada a Objetos (POO) en C++, estructurando el sistema en clases que manejan la persistencia a bajo nivel y el polimorfismo para las distintas lógicas de distribución.
+
+\subsection{Abstracción del Hardware (Clase \texttt{Disco})}
+La arquitectura define como componente atómico a la clase \texttt{Disco}, diseñada para abstraer una unidad física de almacenamiento. Para lograr una simulación realista, se implementaron las siguientes técnicas estructurales:
+
+\begin{itemize}
+    \item \textbf{Persistencia Binaria a Bajo Nivel:} La información se almacena y procesa dinámicamente utilizando la estructura \texttt{vector<unsigned char>}. El uso del tipo \textit{unsigned char} es una decisión arquitectónica crítica, ya que permite manipular la información a nivel de bytes puros, lo cual es un requisito matemático estricto para aplicar operadores lógicos bit a bit (XOR).
+    \item \textbf{Interacción con el Sistema de Archivos:} Se emula la memoria no volátil vinculando cada objeto \texttt{Disco} a un archivo en el sistema host. Los métodos de Entrada/Salida (\texttt{getData} y \texttt{writeData}) operan mediante la librería \texttt{<fstream>} utilizando las banderas \texttt{ios::binary} e \texttt{ios::trunc}, garantizando que los datos binarios se lean sin conversiones y se sobrescriban evitando superposición de datos corruptos.
+    \item \textbf{Simulación de Fallos Catastróficos:} La disponibilidad de la unidad física se controla mediante el atributo booleano \texttt{status}. El método \texttt{borrarData()} cambia este estado lógico a \textit{false} y trunca el archivo binario asociado, emulando un fallo mecánico irreversible que obligará al arreglo a iniciar rutinas de reconstrucción.
+\end{itemize}
+
+\subsection{Arquitectura de la Controladora (Librería \texttt{RAID.hpp})}
+La gestión de los arreglos se centraliza a través de la librería \texttt{RAID.hpp}. La clase abstracta base \texttt{RAID} actúa como la controladora lógica y sus técnicas principales incluyen:
+\begin{itemize}
+    \item \textbf{Gestión Dinámica de Unidades:} Emplea el atributo protegido \texttt{vector<Disco> disks} para agrupar las unidades. Su constructor utiliza la función \texttt{sprintf} de la librería \texttt{<cstdio>} para instanciar y asignar nombres dinámicos a los archivos físicos de cada disco durante la inicialización.
+    \item \textbf{Polimorfismo:} Define un contrato estricto de funcionamiento mediante los métodos virtuales puros \texttt{writeInfo()}, \texttt{readInfo()} y \texttt{recoverDisk()}. Esto permite aislar la lógica de distribución, delegando el comportamiento matemático a las clases derivadas (\texttt{RAID0}, \texttt{RAID1}, \texttt{RAID5}, \texttt{RAID10}).
+\end{itemize}
+
+\subsection{Implementación del Arreglo RAID 5: Paridad Distribuida}
+El mayor desafío computacional del simulador recae en la clase \texttt{RAID5}, la cual hereda de la clase abstracta \texttt{RAID}. A diferencia de los arreglos espejados, RAID 5 requiere la implementación de aritmética booleana a nivel de bytes para garantizar la tolerancia a fallos.
+
+Para gestionar la integridad del arreglo, se implementó el método propio \texttt{verifyDisksStatus()}. Este algoritmo inspecciona el estado lógico de cada objeto \texttt{Disco}. Si detecta múltiples fallos, retorna un código de error crítico (\texttt{-1}), dado que RAID 5 matemáticamente solo puede soportar la pérdida de una unidad. Si detecta un solo fallo, retorna el índice del disco caído para iniciar la reconstrucción.
+
+Las operaciones fundamentales sobrescriben los métodos virtuales puros de la clase base:
+
+\begin{itemize}
+    \item \textbf{Algoritmo de Escritura (\texttt{writeInfo}):} 
+    La información entrante (recibida como \texttt{const string \&info} para evitar copias en memoria) se divide lógicamente en filas. Para evitar cuellos de botella térmicos y de I/O, la paridad se distribuye de forma rotativa calculando el destino mediante la operación de módulo:
+    \begin{equation}
+        \text{Disco de Paridad} = \text{Fila Actual} \pmod N
+    \end{equation}
+    donde $N$ es el total de discos. El algoritmo itera sobre la información (rellenando con \texttt{'\textbackslash0'} si la fila está incompleta) y acumula el valor de paridad aplicando la compuerta XOR (\texttt{\^{}}) a todos los bytes de la fila antes de invocar \texttt{writeData()} en cada disco físico.
+
+    \item \textbf{Algoritmo de Lectura (\texttt{readInfo}):} 
+    El algoritmo itera fila por fila a través de todos los discos, calculando dinámicamente qué unidad contiene el byte de paridad en la fila actual para omitirlo. Los bytes de datos puros se concatenan para retornar la información íntegra.
+
+    \item \textbf{Algoritmo de Reconstrucción (\texttt{recoverDisk}):} 
+    En caso de una unidad degradada, el algoritmo determina la profundidad (filas) leyendo el tamaño de una unidad sana. Luego, iterando secuencialmente, omite el disco caído y aplica la operación XOR inversa entre los bytes sobrevivientes y el byte de paridad. El vector reconstruido se escribe permanentemente en una nueva unidad a través de \texttt{writeData()}, restaurando la redundancia óptima.
+\end{itemize}
+
+\subsection{Implementación de RAID 0: Distribución de Datos (Data Striping)}
+
+La clase \texttt{RAID0} hereda de la controladora base, pero representa el extremo opuesto en la balanza de diseño: maximiza el rendimiento de Entrada/Salida (I/O) a costa de carecer por completo de tolerancia a fallos. Su implementación técnica refleja esta naturaleza mediante las siguientes lógicas:
+
+\begin{itemize}
+    \item \textbf{Gestión de Estado y Restricción de Recuperación:} El método \texttt{verifyDisksStatus()} itera sobre las unidades y retorna un vector dinámico con los índices de \textit{todos} los discos caídos. De manera crucial a nivel de diseño orientado a objetos, el método virtual \texttt{recoverDisk()} fue sobrescrito asignándole un modificador de acceso \textbf{privado} (\texttt{private}). Esta restricción arquitectónica refleja la limitación física real del hardware: al carecer de paridad o espejos, es matemáticamente imposible recuperar los datos, por lo que el método bloquea la operación y emite una excepción o mensaje de error.
+
+    \item \textbf{Algoritmo de Escritura (\texttt{writeInfo}):} La cadena de información (\texttt{const string \&info}) se divide en bloques lógicos (filas) de tamaño igual a la cantidad total de discos. El algoritmo almacena temporalmente los datos en un búfer (\texttt{vector<unsigned char> currentBytes}). Si la longitud de la cadena se agota antes de completar una fila, el sistema aplica una técnica de \textit{padding}, rellenando los espacios faltantes con el carácter nulo (\texttt{'\textbackslash0'}) antes de distribuir simultáneamente los bytes entre todos los objetos \texttt{Disco}.
+
+    \item \textbf{Algoritmo de Lectura (\texttt{readInfo}):} El proceso extrae la información recorriendo la matriz de almacenamiento (filas lógicas y columnas físicas) de manera secuencial. Durante este ciclo, el algoritmo implementa un filtro a nivel de byte que descarta automáticamente los caracteres de relleno (\texttt{'\textbackslash0'}) introducidos durante la fase de escritura, garantizando que la cadena retornada (\texttt{exitData}) contenga exclusivamente la información original íntegra.
+\end{itemize}
+
+\subsection{Implementación de RAID 1: Espejado de Datos (Mirroring)}
+
+La clase \texttt{RAID1} prioriza la redundancia absoluta y la alta disponibilidad sobre la eficiencia espacial. A nivel arquitectónico, configura su capacidad útil (\texttt{usableCapacity}) para que sea equivalente al tamaño de una sola unidad, lo que indica que el sistema opera como un espejo estricto donde cada disco físico contiene una copia exacta de la información total.
+
+Sus métodos virtuales se implementaron bajo esta lógica de replicación:
+
+\begin{itemize}
+    \item \textbf{Algoritmo de Escritura (\texttt{writeInfo}):} Para mantener la sincronización, el sistema primero extrae el vector de memoria del disco primario (\texttt{disks[0]}) y le concatena secuencialmente los caracteres de la nueva cadena entrante. Posteriormente, un ciclo itera sobre \textit{todos} los objetos \texttt{Disco} del arreglo, invocando el método \texttt{writeData()} en cada uno para asegurar que el vector modificado se escriba simultáneamente en todas las unidades.
+    
+    \item \textbf{Algoritmo de Lectura (\texttt{readInfo}):} Aprovechando la simetría de la información, el algoritmo optimiza las operaciones de Entrada/Salida (I/O). En lugar de consultar múltiples unidades, extrae exclusivamente el \texttt{vector<unsigned char>} del disco primario (\texttt{disks[0]}) y lo transforma directamente en la cadena de salida (\texttt{exitData}), maximizando la velocidad de lectura.
+    
+    \item \textbf{Detección y Reconstrucción (\texttt{verifyDisksStatus} y \texttt{recoverDisk}):} El sistema de monitoreo retorna un vector con los índices de las unidades averiadas. La rutina de recuperación es altamente eficiente debido a la ausencia de cálculos matemáticos de paridad: implementa un ciclo \texttt{while} que busca la \textit{primera} unidad física que mantenga su integridad (\texttt{status == true}). Al encontrarla, extrae sus datos intactos (\texttt{recoveredData}) y realiza un volcado directo de memoria sobre el disco reemplazado, restaurando finalmente su atributo de estado a verdadero.
+\end{itemize}
+
+\subsection{Implementación de RAID 10: Striping de Espejos (Arquitectura Híbrida)}
+
+La clase \texttt{RAID10} representa una arquitectura híbrida que combina el alto rendimiento del fraccionamiento (RAID 0) con la tolerancia a fallos absoluta de los espejos (RAID 1), evadiendo la sobrecarga de procesamiento lógico (\textit{Write Penalty}) del RAID 5. El costo de esta sinergia es el sacrificio del 50\% de la capacidad bruta (\texttt{totalCapacity}). Su implementación algorítmica destaca por el manejo eficiente y matemático de los índices de las unidades:
+
+\begin{itemize}
+    \item \textbf{Algoritmo de Escritura (\texttt{writeInfo}):} El algoritmo agrupa lógicamente los discos en pares. Mediante un ciclo que avanza en saltos de dos (\texttt{j += 2}), fracciona la cadena original e inserta cada byte de forma simultánea en la unidad "primaria" (índice par \texttt{j}) y en su unidad espejo correspondiente (índice impar \texttt{j + 1}). Si la cadena no completa el segmento asignado a la fila, se aplica \textit{padding} rellenando el espacio con el carácter nulo (\texttt{'\textbackslash0'}).
+    
+    \item \textbf{Algoritmo de Lectura (\texttt{readInfo}):} Aprovechando la simetría de los pares lógicos, el algoritmo optimiza el rendimiento de Entrada/Salida (I/O) leyendo la matriz de datos exclusivamente desde los discos pares (\texttt{j += 2}). Durante este proceso, filtra automáticamente los caracteres nulos y reconstruye la cadena original con una alta eficiencia de lectura.
+    
+    \item \textbf{Recuperación Condicionada (\texttt{recoverDisk}):} Al simular la degradación de una unidad, la rutina calcula matemáticamente el índice de su pareja (sumando 1 si el disco caído es par, o restando 1 si es impar, mediante la condición \texttt{diskNumber \% 2 == 0}). Posteriormente, valida el estado (\texttt{status}) del disco espejo. Si se encuentra sano, extrae su información y la vuelca directamente al disco averiado; de lo contrario, el sistema emite un error estándar (\texttt{cerr}), emulando el fallo catastrófico e irrecuperable que ocurre en hardware real cuando ambas unidades de un sub-arreglo se corrompen simultáneamente.
+\end{itemize}
+
+% --- 3. ANÁLISIS Y COMPARACIÓN DE RESULTADOS ---
+\section{Análisis y Comparación de Resultados}
+
+Tras la integración de las clases en el entorno de simulación y la ejecución de pruebas mediante la interfaz principal (\texttt{main.cpp}), se analizó el comportamiento de las cuatro arquitecturas. La evaluación se centró en la eficiencia espacial, la respuesta ante escenarios de fallo y el manejo polimórfico del sistema.
+
+\subsection{Entorno de Simulación y Polimorfismo}
+El simulador demostró una alta cohesión arquitectónica mediante el uso avanzado de Programación Orientada a Objetos. La ejecución se gestiona a través de un único puntero de la clase base abstracta (\texttt{RAID *sistema}), el cual se instancia dinámicamente según la arquitectura seleccionada por el usuario. Esto permite que el ciclo principal de Entrada/Salida opere independientemente de la complejidad matemática subyacente de cada arreglo. Adicionalmente, el proyecto incluye rutinas de compilación multiplataforma (Windows/Linux) garantizando la portabilidad del código fuente en entornos académicos y de producción.
+
+\subsection{Comparativa de Capacidades de Almacenamiento}
+Se ejecutaron simulaciones de asignación de espacio variando el número de discos ($N$) y su capacidad unitaria ($S$). Los resultados corroboran los modelos teóricos de penalización por redundancia:
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{@{}lccc@{}}
+        \toprule
+        \textbf{Arquitectura} & \textbf{Capacidad Total Bruta} & \textbf{Capacidad Útil Real} & \textbf{Eficiencia} \\ \midrule
+        \textbf{RAID 0}  & $N \times S$ & $N \times S$ & $100\%$ \\
+        \textbf{RAID 1}  & $N \times S$ & $S$ (Espejo estricto) & Inversamente prop. a $N$ \\
+        \textbf{RAID 5}  & $N \times S$ & $(N - 1) \times S$ & Alta (Óptima con $N \ge 3$) \\
+        \textbf{RAID 10} & $N \times S$ & $(N \times S) / 2$ & $50\%$ fijo \\ \bottomrule
+    \end{tabular}
+    \caption{Resultados empíricos de asignación de memoria en el simulador.}
+    \label{tab:capacidades}
+\end{table}
+
+Los datos reafirman que RAID 0 es la única arquitectura que aprovecha el 100\% de la inversión en hardware, mientras que RAID 10 y RAID 1 asumen un costo financiero significativo (mínimo del 50\%) para garantizar la persistencia. RAID 5 destaca como el punto de equilibrio, maximizando la capacidad útil a medida que se añaden más unidades físicas, sacrificando siempre el equivalente a un solo disco para alojar las paridades de bloque.
+
+\subsection{Comportamiento ante Fallos y Auto-Recuperación Proactiva}
+Para evaluar la tolerancia a fallos, se indujo la corrupción y truncado de archivos binarios utilizando el método \texttt{diskFailure()}. 
+
+El simulador implementó un sistema de \textbf{Auto-Recuperación Proactiva} altamente eficiente. Al intentar realizar una operación crítica de I/O (lectura o escritura desde archivo de texto o consola), el sistema no confía ciegamente en el arreglo; primero invoca \texttt{verifyDisksStatus()}. Si detecta vulnerabilidades, el simulador detiene la operación, alerta al administrador e inicia automáticamente los ciclos de \texttt{recoverDisk()} iterando sobre el vector de discos averiados. 
+
+Dependiendo del arreglo activo, el resultado de estas pruebas de estrés fue el siguiente:
+\begin{itemize}
+    \item \textbf{En RAID 0:} El sistema identificó la caída de la unidad, pero, tal como dicta la teoría, la reconstrucción fue rechazada desde la arquitectura de la clase, resultando en una pérdida total e irrecuperable de la cadena de datos original.
+    \item \textbf{En RAID 1 y RAID 10:} La recuperación fue virtualmente instantánea. El sistema detectó la anomalía, aisló el disco dañado y volcó el vector de bytes desde la unidad espejo correspondiente, permitiendo reanudar la operación de lectura/escritura sin corrupción de datos.
+    \item \textbf{En RAID 5:} Se confirmó el éxito del algoritmo de paridad distribuida. Al truncar un disco y solicitar una lectura, el simulador aplicó la operación lógica XOR inversa sobre las filas de las unidades sobrevivientes, regenerando matemáticamente los caracteres perdidos y restaurando la integridad del archivo binario averiado de forma transparente para el usuario.
+\end{itemize}
+
+\subsection{Conclusión de la Simulación}
+El desarrollo y ejecución del simulador demuestran empíricamente que no existe una arquitectura de almacenamiento universalmente superior. La selección debe responder a la carga de trabajo: cargas algorítmicas o temporales de alto rendimiento encuentran su solución en RAID 0; las bases de datos de alta disponibilidad y presupuesto holgado requieren RAID 10; mientras que los sistemas de archivo general logran su mejor relación costo-beneficio a través de la matemática booleana implementada en RAID 5.
+
+\end{document}
