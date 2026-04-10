@@ -164,6 +164,6 @@ class ArbolBin{
 };
 
 template<class element>
-ArbolBin<element>::ArbolBin() : pRaiz(nullptr), peso(0) {}
+ArbolBin<element>::ArbolBin() : pRaiz(NULL), peso(0) {}
 
 #endif
